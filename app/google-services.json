@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "242705814666",
+    "firebase_url": "https://mh-chat-70db6.firebaseio.com",
+    "project_id": "mh-chat-70db6",
+    "storage_bucket": "mh-chat-70db6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242705814666:android:0a56c3defcd1154583c973",
+        "android_client_info": {
+          "package_name": "com.example.makeitso"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "242705814666-r7i81ue5o9kk2vqvis494pgidqn3mie5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwc0Pmgq5hYAR5lTWnGWfwuMRWh2C9bDY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "242705814666-r7i81ue5o9kk2vqvis494pgidqn3mie5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242705814666:android:76e71da4136d1c2283c973",
+        "android_client_info": {
+          "package_name": "com.mahmoudhamdyae.mhchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "242705814666-r7i81ue5o9kk2vqvis494pgidqn3mie5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwc0Pmgq5hYAR5lTWnGWfwuMRWh2C9bDY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "242705814666-r7i81ue5o9kk2vqvis494pgidqn3mie5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
