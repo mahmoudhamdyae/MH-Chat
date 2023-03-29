@@ -1,3 +1,41 @@
 <resources>
     <string name="app_name">MH Chat</string>
+
+    <string name="generic_error">Something wrong happened. Please try again.</string>
+
+    <!-- Screens Titles -->
+    <string name="home_screen_title">MH Chat</string>
+    <string name="log_in_screen_title">Sign In</string>
+    <string name="sign_up_screen_title">Sign Up</string>
+    <string name="users_screen_title">Users</string>
+
+    <!-- Auth -->
+    <string name="user_name">User name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="email_error">Please insert a valid email.</string>
+    <string name="empty_password_error">Password cannot be empty.</string>
+    <string name="password_error">Your password should have at least six digits and include one digit, one lower case letter and one upper case letter.</string>
+    <!-- Log In -->
+    <string name="log_in_button">Sign in</string>
+    <string name="log_in_with_google_button">Sign in with Google</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="recovery_email_sent">Check your inbox for the recovery email.</string>
+    <string name="new_in_app">New in MH Chat? </string>
+    <string name="sig_up_for_free">Sign up for free</string>
+    <!-- Sign Up -->
+    <string name="repeat_password">Repeat password</string>
+    <string name="sign_up_button">Create an Account</string>
+    <string name="user_name_error">Please insert a valid name.</string>
+    <string name="password_match_error">Passwords do not match.</string>
+    <string name="sign_up_with_google_button">Sign up with Google</string>
+    <string name="already_have_an_account">Already have an Account? </string>
+    <string name="sign_in">Sign in</string>
+
+    <!-- Content Descriptions -->
+    <string name="email_content_description">Email</string>
+    <string name="password_content_description">Password</string>
+    <string name="fab_add_content_description">Add</string>
+    <string name="google_icon_content_description">Google</string>
+
 </resources>
