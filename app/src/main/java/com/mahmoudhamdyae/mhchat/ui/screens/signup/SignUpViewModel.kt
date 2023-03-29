@@ -47,7 +47,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onSignUpClick(navigate: (String) -> Unit) {
-        if (checkAllFields()) {
+        if (validateAllFields()) {
             launchCatching {
                 accountService.linkAccount(email, password)
                 navigate(HomeDestination.route)
@@ -55,21 +55,14 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun onSignUpClickWithGoogle(navigate: (String) -> Unit) {
-        launchCatching {
-//            accountService.authenticateWithGoogle(application)
-//            navigate(HomeDestination.route)
-        }
+    private fun validateAllFields(): Boolean {
+        return validateUserName()
+                && validateEmail()
+                && validatePassword()
+                && validateRepeatPassword()
     }
 
-    private fun checkAllFields(): Boolean {
-        return checkUserNameValidation()
-                && checkEmailValidation()
-                && checkPasswordValidation()
-                && checkPasswordRepeatValidation()
-    }
-
-    private fun checkUserNameValidation(): Boolean {
+    private fun validateUserName(): Boolean {
         return if (userName.isValidUserName()) {
             true
         } else {
@@ -78,7 +71,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun checkEmailValidation(): Boolean {
+    private fun validateEmail(): Boolean {
         return if (email.isValidEmail()) {
             true
         } else {
@@ -87,7 +80,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun checkPasswordValidation(): Boolean {
+    private fun validatePassword(): Boolean {
         return if (password.isValidPassword()) {
             true
         } else {
@@ -96,7 +89,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun checkPasswordRepeatValidation(): Boolean {
+    private fun validateRepeatPassword(): Boolean {
         return if (password.passwordMatches(uiState.value.repeatPassword)) {
             true
         } else {

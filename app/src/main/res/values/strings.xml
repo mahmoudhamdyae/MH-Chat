@@ -33,6 +33,21 @@
     <string name="already_have_an_account">Already have an Account? </string>
     <string name="sign_in">Sign in</string>
 
+    <!-- Settings -->
+    <string name="delete_my_account">Delete my account</string>
+
+    <!-- Dialogs -->
+    <string name="sign_out_confirm">Sign out</string>
+    <string name="delete_account_confirm">Delete Account</string>
+    <string name="cancel">Cancel</string>
+    <!-- Sign Out Dialog -->
+    <string name="sign_out_title">Sign out?</string>
+    <string name="sign_out_description">You will have to sign in again to see your chats.</string>
+    <!-- Delete Account Dialog -->
+    <string name="delete_account_title">Delete account?</string>
+    <string name="delete_account_description">You will lose all your messages and your account will be deleted. This action is irreversible.</string>
+    <string name="delete_account_description_enter_fields">Enter your password.</string>
+
     <!-- Content Descriptions -->
     <string name="email_content_description">Email</string>
     <string name="password_content_description">Password</string>

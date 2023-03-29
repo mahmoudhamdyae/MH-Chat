@@ -71,12 +71,5 @@ fun LogInScreen(
         BasicButton(R.string.log_in_button, Modifier.basicButton()) {
             viewModel.onSignInClick(openAndPopUp)
         }
-
-        GoogleButton(
-            text = R.string.log_in_with_google_button,
-            modifier = Modifier.basicButton()
-        ) {
-            viewModel.onSignInWithGoogleClick(openAndPopUp)
-        }
     }
 }

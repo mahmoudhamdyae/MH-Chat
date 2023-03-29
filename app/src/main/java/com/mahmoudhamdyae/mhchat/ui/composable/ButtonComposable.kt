@@ -4,8 +4,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -39,31 +37,10 @@ fun BasicButton(@StringRes text: Int, modifier: Modifier = Modifier, action: () 
 }
 
 @Composable
-fun GoogleButton(
-    @StringRes text: Int,
-    modifier: Modifier = Modifier,
-    action: () -> Unit,
-) {
-    OutlinedButton(
-        onClick = action,
-        modifier = modifier,
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.google),
-            contentDescription = stringResource(id = R.string.google_icon_content_description),
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
-        Text(text = stringResource(text))
-    }
-}
-
-@Composable
 fun DialogConfirmButton(@StringRes text: Int, action: () -> Unit) {
     Button(
         onClick = action,
-        colors =
-        ButtonDefaults.buttonColors(
+        colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primary,
             contentColor = MaterialTheme.colors.onPrimary
         )
@@ -76,8 +53,7 @@ fun DialogConfirmButton(@StringRes text: Int, action: () -> Unit) {
 fun DialogCancelButton(@StringRes text: Int, action: () -> Unit) {
     Button(
         onClick = action,
-        colors =
-        ButtonDefaults.buttonColors(
+        colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.onPrimary,
             contentColor = MaterialTheme.colors.primary
         )

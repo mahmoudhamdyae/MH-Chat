@@ -1,6 +1,6 @@
 package com.mahmoudhamdyae.mhchat.data.services
 
-import android.app.Application
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
@@ -24,7 +24,9 @@ class AccountServiceImpl @Inject constructor(
         get() = callbackFlow {
             val listener =
                 FirebaseAuth.AuthStateListener { auth ->
-                    this.trySend(auth.currentUser?.let { User(userId = it.uid) } ?: User())
+                    this.trySend(auth.currentUser?.let {
+                        User(userId = it.uid, email = it.email!!)
+                    } ?: User())
                 }
             auth.addAuthStateListener(listener)
             awaitClose { auth.removeAuthStateListener(listener) }
@@ -35,21 +37,6 @@ class AccountServiceImpl @Inject constructor(
      */
     override suspend fun authenticate(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password).await()
-    }
-
-    /**
-     * Log in with Google
-     */
-    override suspend fun authenticateWithGoogle(application: Application) {
-//        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//            .requestIdToken(R.string.default_web_client_id.toString())
-//            .requestEmail()
-//            .build()
-//
-//        val googleSignInClient = GoogleSignIn.getClient(application, gso)
-//
-//        val credential = GoogleAuthProvider.getCredential(idToken, null)
-//        auth.signInWithCredential(credential).await()
     }
 
     override suspend fun sendRecoveryEmail(email: String) {
@@ -63,7 +50,9 @@ class AccountServiceImpl @Inject constructor(
         auth.createUserWithEmailAndPassword(email, password).await()
     }
 
-    override suspend fun deleteAccount() {
+    override suspend fun deleteAccount(email: String, password: String) {
+        val credential = EmailAuthProvider.getCredential(email, password)
+        auth.currentUser!!.reauthenticate(credential).await()
         auth.currentUser!!.delete().await()
     }
 

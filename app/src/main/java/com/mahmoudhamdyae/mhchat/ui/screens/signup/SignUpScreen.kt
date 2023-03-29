@@ -69,12 +69,5 @@ fun SignUpScreen(
         BasicButton(R.string.sign_up_button, Modifier.basicButton()) {
             viewModel.onSignUpClick(openAndPopUp)
         }
-
-        GoogleButton(
-            text = R.string.sign_up_with_google_button,
-            modifier = Modifier.basicButton()
-        ) {
-            viewModel.onSignUpClickWithGoogle(openAndPopUp)
-        }
     }
 }

@@ -34,7 +34,7 @@ class LogInViewModel @Inject constructor(
     }
 
     fun onSignInClick(navigate: (String) -> Unit) {
-        if (checkAllFields()) {
+        if (validateAllFields()) {
             launchCatching {
                 accountService.authenticate(email, password)
                 navigate(HomeDestination.route)
@@ -42,15 +42,8 @@ class LogInViewModel @Inject constructor(
         }
     }
 
-    fun onSignInWithGoogleClick(navigate: (String) -> Unit) {
-        launchCatching {
-//            accountService.authenticateWithGoogle(application)
-//            navigate(HomeDestination.route)
-        }
-    }
-
     fun onForgotPasswordClick() {
-        if (checkEmailValidation()) {
+        if (validateEmail()) {
             launchCatching {
                 accountService.sendRecoveryEmail(email)
                 SnackBarManager.showMessage(R.string.recovery_email_sent)
@@ -58,9 +51,9 @@ class LogInViewModel @Inject constructor(
         }
     }
 
-    private fun checkAllFields() = checkEmailValidation() && checkPasswordValidation()
+    private fun validateAllFields() = validateEmail() && validatePassword()
 
-    private fun checkEmailValidation(): Boolean {
+    private fun validateEmail(): Boolean {
         return if (email.isValidEmail()) {
             true
         } else {
@@ -69,7 +62,7 @@ class LogInViewModel @Inject constructor(
         }
     }
 
-    private fun checkPasswordValidation(): Boolean {
+    private fun validatePassword(): Boolean {
         return if (password.isBlank()) {
             SnackBarManager.showMessage(R.string.empty_password_error)
             false
