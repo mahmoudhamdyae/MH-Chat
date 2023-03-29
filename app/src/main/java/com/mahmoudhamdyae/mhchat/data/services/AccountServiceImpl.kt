@@ -1,10 +1,7 @@
 package com.mahmoudhamdyae.mhchat.data.services
 
 import android.app.Application
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import kotlinx.coroutines.channels.awaitClose
@@ -44,13 +41,13 @@ class AccountServiceImpl @Inject constructor(
      * Log in with Google
      */
     override suspend fun authenticateWithGoogle(application: Application) {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(R.string.default_web_client_id.toString())
-            .requestEmail()
-            .build()
-
-        val googleSignInClient = GoogleSignIn.getClient(application, gso)
-
+//        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//            .requestIdToken(R.string.default_web_client_id.toString())
+//            .requestEmail()
+//            .build()
+//
+//        val googleSignInClient = GoogleSignIn.getClient(application, gso)
+//
 //        val credential = GoogleAuthProvider.getCredential(idToken, null)
 //        auth.signInWithCredential(credential).await()
     }
@@ -63,7 +60,7 @@ class AccountServiceImpl @Inject constructor(
      * Sign up a new user with email and password
      */
     override suspend fun linkAccount(email: String, password: String) {
-        auth.createUserWithEmailAndPassword(email, password)
+        auth.createUserWithEmailAndPassword(email, password).await()
     }
 
     override suspend fun deleteAccount() {

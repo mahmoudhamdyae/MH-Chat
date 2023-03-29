@@ -7,15 +7,18 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mahmoudhamdyae.mhchat.R
-import com.mahmoudhamdyae.mhchat.ui.composable.BasicToolBar
+import com.mahmoudhamdyae.mhchat.ui.composable.ActionToolbar
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersDestination
+import com.mahmoudhamdyae.mhchat.ui.settings.SettingsDestination
 
 object HomeDestination: NavigationDestination {
     override val route: String = "home"
@@ -35,7 +38,15 @@ fun HomeScreen(
 
     Scaffold(
         modifier = modifier,
-        topBar = { BasicToolBar(title = HomeDestination.titleRes) },
+        topBar = { ActionToolbar(
+            title = HomeDestination.titleRes,
+            endActionIcons = listOf(Icons.Default.ExitToApp, Icons.Default.Settings),
+            endActions = listOf({
+                viewModel.onSignOut(openScreen)
+            }, {
+                openScreen(SettingsDestination.route)
+            })
+        ) },
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 openScreen(UsersDestination.route)

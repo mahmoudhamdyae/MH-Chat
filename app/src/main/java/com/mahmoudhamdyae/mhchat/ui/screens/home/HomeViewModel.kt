@@ -18,4 +18,11 @@ class HomeViewModel @Inject constructor(
             navigate(LogInDestination.route)
         }
     }
+
+    fun onSignOut(navigate: (String) -> Unit) {
+        launchCatching {
+            accountService.signOut()
+            navigate(LogInDestination.route)
+        }
+    }
 }

@@ -8,6 +8,7 @@
     <string name="log_in_screen_title">Sign In</string>
     <string name="sign_up_screen_title">Sign Up</string>
     <string name="users_screen_title">Users</string>
+    <string name="settings_screen_title">Settings</string>
 
     <!-- Auth -->
     <string name="user_name">User name</string>

@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 fun Modifier.textButton(): Modifier {
-    return this.fillMaxWidth().padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 0.dp)
+    return this.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 0.dp)
 }
 
 fun Modifier.basicButton(): Modifier {

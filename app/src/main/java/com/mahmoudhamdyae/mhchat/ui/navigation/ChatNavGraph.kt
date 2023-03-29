@@ -10,6 +10,10 @@ import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInScreen
 import com.mahmoudhamdyae.mhchat.ui.screens.signup.SignUpDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.signup.SignUpScreen
+import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersScreen
+import com.mahmoudhamdyae.mhchat.ui.settings.SettingsDestination
+import com.mahmoudhamdyae.mhchat.ui.settings.SettingsScreen
 
 /**
  * Provides Navigation graph for the application.
@@ -41,5 +45,13 @@ fun NavGraphBuilder.chatGraph(appState: ChatAppState) {
                 appState.clearAndNavigate(route)
             }
         )
+    }
+
+    composable(SettingsDestination.route) {
+        SettingsScreen()
+    }
+
+    composable(UsersDestination.route) {
+        UsersScreen()
     }
 }
