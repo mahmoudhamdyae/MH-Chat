@@ -5,7 +5,9 @@ import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
+import com.mahmoudhamdyae.mhchat.domain.services.DatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
+import com.mahmoudhamdyae.mhchat.domain.services.StorageService
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,6 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val accountService: AccountService,
+    private val databaseService: DatabaseService,
+    private val storageService: StorageService,
     logService: LogService
 ): ChatViewModel(logService) {
 
@@ -29,6 +33,8 @@ class SettingsViewModel @Inject constructor(
     fun onDeleteAccount(password: String, navigate: (String) -> Unit) {
         launchCatching {
             if (validatePassword(password)) {
+                databaseService.deleteUser()
+                storageService.delImage(accountService.currentUserId)
                 accountService.deleteAccount(user.email, password)
                 navigate(LogInDestination.route)
             }

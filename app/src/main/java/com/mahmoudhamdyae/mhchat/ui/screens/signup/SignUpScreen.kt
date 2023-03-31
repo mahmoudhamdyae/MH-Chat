@@ -26,12 +26,12 @@ import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInDestination
 object SignUpDestination: NavigationDestination {
     override val route: String = "sign_up"
     override val titleRes: Int = R.string.app_name
-
 }
 
 @Composable
 fun SignUpScreen(
     openAndPopUp: (String) -> Unit,
+    openScreen: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = hiltViewModel(),
 ) {
@@ -67,7 +67,7 @@ fun SignUpScreen(
         RepeatPasswordField(uiState.repeatPassword, viewModel::onRepeatPasswordChange, focusManager, fieldModifier)
 
         BasicButton(R.string.sign_up_button, Modifier.basicButton()) {
-            viewModel.onSignUpClick(openAndPopUp)
+            viewModel.onSignUpClick(openScreen)
         }
     }
 }

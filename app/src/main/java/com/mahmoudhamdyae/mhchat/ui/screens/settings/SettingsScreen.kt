@@ -6,6 +6,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -28,8 +29,8 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
-    var showWarningDialog by remember { mutableStateOf(false) }
-    var password by remember { mutableStateOf("") }
+    var showWarningDialog by rememberSaveable { mutableStateOf(false) }
+    var password by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.initialize()
@@ -52,10 +53,20 @@ fun SettingsScreen(
         AlertDialog(
             title = { Text(stringResource(R.string.delete_account_title)) },
             text = {
-                CustomDialog(
-                    onPasswordChange = { password = it },
-                    password = password
-                )
+                Column(modifier = modifier) {
+                    Text(stringResource(R.string.delete_account_description))
+                    Text(
+                        stringResource(R.string.delete_account_description_enter_fields),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    PasswordField(
+                        value = password,
+                        onNewValue = { password = it },
+                        focusManager = LocalFocusManager.current,
+                        modifier = Modifier.fieldModifier()
+                    )
+                }
                    },
             dismissButton = { DialogCancelButton(R.string.cancel) { showWarningDialog = false } },
             confirmButton = {
@@ -64,30 +75,6 @@ fun SettingsScreen(
                 }
             },
             onDismissRequest = { showWarningDialog = false }
-        )
-    }
-}
-
-@Composable
-fun CustomDialog(
-    onPasswordChange: (String) -> Unit,
-    password: String,
-    modifier: Modifier = Modifier
-) {
-    val focusManager = LocalFocusManager.current
-
-    Column(modifier = modifier) {
-        Text(stringResource(R.string.delete_account_description))
-        Text(
-            stringResource(R.string.delete_account_description_enter_fields),
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-
-        PasswordField(
-            value = password,
-            onNewValue = { onPasswordChange(it) },
-            focusManager = focusManager,
-            modifier = Modifier.fieldModifier()
         )
     }
 }

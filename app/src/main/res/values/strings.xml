@@ -32,6 +32,11 @@
     <string name="sign_up_with_google_button">Sign up with Google</string>
     <string name="already_have_an_account">Already have an Account? </string>
     <string name="sign_in">Sign in</string>
+    <!-- Profile Image Screen -->
+    <string name="camera_button">Take Photo</string>
+    <string name="files_button">Select Image</string>
+    <string name="skip_button">Skip</string>
+    <string name="continue_button">Continue to MH Chat</string>
 
     <!-- Settings -->
     <string name="delete_my_account">Delete my account</string>

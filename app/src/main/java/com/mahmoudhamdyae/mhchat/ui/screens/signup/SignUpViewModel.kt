@@ -1,5 +1,6 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.signup
 
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.common.ext.isValidEmail
@@ -7,16 +8,20 @@ import com.mahmoudhamdyae.mhchat.common.ext.isValidPassword
 import com.mahmoudhamdyae.mhchat.common.ext.isValidUserName
 import com.mahmoudhamdyae.mhchat.common.ext.passwordMatches
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
+import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
+import com.mahmoudhamdyae.mhchat.domain.services.DatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
+import com.mahmoudhamdyae.mhchat.domain.services.StorageService
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
-import com.mahmoudhamdyae.mhchat.ui.screens.home.HomeDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val accountService: AccountService,
+    private val databaseService: DatabaseService,
+    private val storageService: StorageService,
     logService: LogService
 ): ChatViewModel(logService) {
 
@@ -50,7 +55,14 @@ class SignUpViewModel @Inject constructor(
         if (validateAllFields()) {
             launchCatching {
                 accountService.linkAccount(email, password)
-                navigate(HomeDestination.route)
+                databaseService.saveUser(
+                    User(
+                        userId = accountService.currentUserId,
+                        email = email,
+                        userName = userName
+                    )
+                )
+                navigate(ProfileImageDestination.route)
             }
         }
     }
@@ -95,6 +107,12 @@ class SignUpViewModel @Inject constructor(
         } else {
             SnackBarManager.showMessage(R.string.password_match_error)
             false
+        }
+    }
+
+    fun saveProfileImage(imageUri: Uri) {
+        launchCatching {
+            storageService.saveImage(imageUri)
         }
     }
 }
