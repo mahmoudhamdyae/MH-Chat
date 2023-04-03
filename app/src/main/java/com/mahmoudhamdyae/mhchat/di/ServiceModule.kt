@@ -1,13 +1,7 @@
 package com.mahmoudhamdyae.mhchat.di
 
-import com.mahmoudhamdyae.mhchat.data.services.AccountServiceImpl
-import com.mahmoudhamdyae.mhchat.data.services.DatabaseServiceImpl
-import com.mahmoudhamdyae.mhchat.data.services.LogServiceImpl
-import com.mahmoudhamdyae.mhchat.data.services.StorageServiceImpl
-import com.mahmoudhamdyae.mhchat.domain.services.AccountService
-import com.mahmoudhamdyae.mhchat.domain.services.DatabaseService
-import com.mahmoudhamdyae.mhchat.domain.services.LogService
-import com.mahmoudhamdyae.mhchat.domain.services.StorageService
+import com.mahmoudhamdyae.mhchat.data.services.*
+import com.mahmoudhamdyae.mhchat.domain.services.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -24,7 +18,10 @@ abstract class ServiceModule {
     abstract fun provideLogService(impl: LogServiceImpl): LogService
 
     @Binds
-    abstract fun provideDatabaseService(impl: DatabaseServiceImpl): DatabaseService
+    abstract fun provideUsersDatabaseService(impl: UsersDatabaseServiceImpl): UsersDatabaseService
+
+    @Binds
+    abstract fun provideChatDatabaseService(impl: ChatDatabaseServiceImpl): ChatDatabaseService
 
     @Binds
     abstract fun provideStorageService(impl: StorageServiceImpl): StorageService

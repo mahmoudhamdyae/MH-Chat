@@ -9,6 +9,8 @@
     <string name="sign_up_screen_title">Sign Up</string>
     <string name="users_screen_title">Users</string>
     <string name="settings_screen_title">Settings</string>
+    <string name="profile_screen_title">Profile</string>
+    <string name="messages_screen_title">Messages</string>
 
     <!-- Auth -->
     <string name="user_name">User name</string>
@@ -52,6 +54,9 @@
     <string name="delete_account_title">Delete account?</string>
     <string name="delete_account_description">You will lose all your messages and your account will be deleted. This action is irreversible.</string>
     <string name="delete_account_description_enter_fields">Enter your password.</string>
+
+    <!-- Messages -->
+    <string name="message_empty">Message cannot be empty.</string>
 
     <!-- Content Descriptions -->
     <string name="email_content_description">Email</string>

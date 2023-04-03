@@ -10,9 +10,9 @@ import com.mahmoudhamdyae.mhchat.common.ext.passwordMatches
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
-import com.mahmoudhamdyae.mhchat.domain.services.DatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.services.StorageService
+import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val accountService: AccountService,
-    private val databaseService: DatabaseService,
+    private val databaseService: UsersDatabaseService,
     private val storageService: StorageService,
     logService: LogService
 ): ChatViewModel(logService) {
@@ -113,6 +113,8 @@ class SignUpViewModel @Inject constructor(
     fun saveProfileImage(imageUri: Uri) {
         launchCatching {
             storageService.saveImage(imageUri)
+            databaseService.
+                updateProfileImage(storageService.getImage(accountService.currentUserId).toString())
         }
     }
 }

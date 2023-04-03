@@ -1,27 +1,32 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.home
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
+import androidx.compose.animation.*
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.material.Text
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mahmoudhamdyae.mhchat.R
-import com.mahmoudhamdyae.mhchat.ui.composable.ActionToolbar
-import com.mahmoudhamdyae.mhchat.ui.composable.DialogCancelButton
-import com.mahmoudhamdyae.mhchat.ui.composable.DialogConfirmButton
+import com.mahmoudhamdyae.mhchat.domain.models.Message
+import com.mahmoudhamdyae.mhchat.domain.models.User
+import com.mahmoudhamdyae.mhchat.ui.composable.*
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
-import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.settings.SettingsDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersDestination
 
 object HomeDestination: NavigationDestination {
     override val route: String = "home"
@@ -35,6 +40,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val uiState by viewModel.uiState
     var showWarningDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -50,18 +56,30 @@ fun HomeScreen(
                 showWarningDialog = true
             }, {
                 openScreen(SettingsDestination.route)
-            })
+            }),
+            onMainScreen = true,
         ) },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                openScreen(UsersDestination.route)
-            }) {
+            FloatingActionButton(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                shape = RoundedCornerShape(16.dp),
+                onClick = {
+                    openScreen(UsersDestination.route)
+                }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(id = R.string.fab_add_content_description))
             }
         }
     )
     { contentPadding ->
-        Column(modifier = Modifier.padding(contentPadding)) {
+        if (uiState.users == null || uiState.users!!.isEmpty()) {
+            EmptyScreen()
+        } else {
+            ChatList(
+                users = uiState.users!!,
+                messages = uiState.lastMessages!!,
+                openScreen = openScreen,
+                modifier = Modifier.padding(contentPadding)
+            )
         }
     }
 
@@ -78,5 +96,100 @@ fun HomeScreen(
             },
             onDismissRequest = { showWarningDialog = false }
         )
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun ChatList(
+    users: List<User?>,
+    messages: List<Message?>,
+    openScreen: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val list = users.zip(messages)
+    val visibleState = remember {
+        MutableTransitionState(false).apply {
+            // Start the animation immediately.
+            targetState = true
+        }
+    }
+
+    // Fade in entry animation for the entire list
+    AnimatedVisibility(
+        visibleState = visibleState,
+        enter = fadeIn(
+            animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)
+        ),
+        exit = fadeOut(),
+    ) {
+        LazyColumn(modifier = modifier) {
+            itemsIndexed(list) { index, list ->
+                ChatListItem(
+                    openScreen = openScreen,
+                    user = list.first,
+                    message = list.second,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        // Animate each list item to slide in vertically
+                        .animateEnterExit(
+                            enter = slideInVertically(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessVeryLow,
+                                    dampingRatio = Spring.DampingRatioLowBouncy
+                                ),
+                                initialOffsetY = { it * (index + 1) } // staggered entrance
+                            )
+                        )
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChatListItem(
+    user: User?,
+    message: Message?,
+    openScreen: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (user != null && message != null) {
+        Card(
+            elevation = CardDefaults.cardElevation(2.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
+            modifier = modifier,
+            onClick = { openScreen("${MessagesDestination.route}/${user.userId}") },
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .sizeIn(minHeight = 72.dp)
+            ) {
+                ProfileImage(
+                    photoUri = user.imageUrl?.toUri(),
+                    modifier = Modifier
+                        .size(72.dp)
+                )
+                Spacer(Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = user.userName,
+                        style = MaterialTheme.typography.displayLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = message.body,
+                        style = MaterialTheme.typography.displayMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
     }
 }

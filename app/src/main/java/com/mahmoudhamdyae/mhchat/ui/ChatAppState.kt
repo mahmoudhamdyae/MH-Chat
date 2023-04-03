@@ -1,7 +1,7 @@
 package com.mahmoudhamdyae.mhchat.ui
 
 import android.content.res.Resources
-import androidx.compose.material.ScaffoldState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Stable
 import androidx.navigation.NavHostController
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 @Stable
 class ChatAppState(
-    val scaffoldState: ScaffoldState,
+    val snackBarHostState: SnackbarHostState,
     val navController: NavHostController,
     private val snackBarManager: SnackBarManager,
     private val resources: Resources,
@@ -22,7 +22,7 @@ class ChatAppState(
         coroutineScope.launch {
             snackBarManager.snackBarMessages.filterNotNull().collect { snackBarMessage ->
                 val text = snackBarMessage.toMessage(resources)
-                scaffoldState.snackbarHostState.showSnackbar(text)
+                snackBarHostState.showSnackbar(text)
             }
         }
     }

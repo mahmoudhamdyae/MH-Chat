@@ -5,10 +5,12 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -26,11 +28,6 @@ fun BasicButton(@StringRes text: Int, modifier: Modifier = Modifier, action: () 
     Button(
         onClick = action,
         modifier = modifier,
-        colors =
-        ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.primary,
-            contentColor = MaterialTheme.colors.onPrimary
-        )
     ) {
         Text(text = stringResource(text), fontSize = 16.sp)
     }
@@ -62,10 +59,6 @@ fun ButtonWithIcon(
 fun DialogConfirmButton(@StringRes text: Int, action: () -> Unit) {
     Button(
         onClick = action,
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.primary,
-            contentColor = MaterialTheme.colors.onPrimary
-        )
     ) {
         Text(text = stringResource(text))
     }
@@ -75,10 +68,6 @@ fun DialogConfirmButton(@StringRes text: Int, action: () -> Unit) {
 fun DialogCancelButton(@StringRes text: Int, action: () -> Unit) {
     Button(
         onClick = action,
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.onPrimary,
-            contentColor = MaterialTheme.colors.primary
-        )
     ) {
         Text(text = stringResource(text))
     }

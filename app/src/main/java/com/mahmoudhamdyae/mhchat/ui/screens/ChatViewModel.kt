@@ -1,10 +1,10 @@
 package com.mahmoudhamdyae.mhchat.ui.screens
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarMessage.Companion.toSnackBarMessage
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope

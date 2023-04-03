@@ -2,7 +2,7 @@ package com.mahmoudhamdyae.mhchat.ui
 
 import android.content.res.Resources
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
@@ -14,29 +14,28 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.mahmoudhamdyae.mhchat.ui.navigation.chatGraph
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
+import com.mahmoudhamdyae.mhchat.ui.navigation.chatGraph
 import com.mahmoudhamdyae.mhchat.ui.screens.home.HomeDestination
 import kotlinx.coroutines.CoroutineScope
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ChatApp(
     modifier: Modifier = Modifier
 ) {
-    val appState = rememberAppState()
+    val snackBarHostState = remember { SnackbarHostState() }
+    val appState = rememberAppState(snackBarHostState = snackBarHostState)
 
     Scaffold(
         snackbarHost = {
             SnackbarHost(
-                hostState = it,
+                hostState = snackBarHostState,
                 modifier = Modifier.padding(8.dp),
                 snackbar = { snackBarData ->
-                    Snackbar(snackBarData, contentColor = MaterialTheme.colors.onPrimary)
+                    Snackbar(snackBarData, contentColor = MaterialTheme.colorScheme.onPrimary)
                 }
             )
         },
-        scaffoldState = appState.scaffoldState
     ) { innerPadding ->
         NavHost(
             navController = appState.navController,
@@ -50,14 +49,14 @@ fun ChatApp(
 
 @Composable
 fun rememberAppState(
-    scaffoldState: ScaffoldState = rememberScaffoldState(),
+    snackBarHostState: SnackbarHostState = remember { SnackbarHostState() },
     navController: NavHostController = rememberNavController(),
     snackBarManager: SnackBarManager = SnackBarManager,
     resources: Resources = resources(),
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) =
-    remember(scaffoldState, navController, snackBarManager, resources, coroutineScope) {
-        ChatAppState(scaffoldState, navController, snackBarManager, resources, coroutineScope)
+    remember(snackBarHostState, navController, snackBarManager, resources, coroutineScope) {
+        ChatAppState(snackBarHostState, navController, snackBarManager, resources, coroutineScope)
     }
 
 @Composable

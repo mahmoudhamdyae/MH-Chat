@@ -4,6 +4,7 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
+import com.mahmoudhamdyae.mhchat.domain.services.trace
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -36,27 +37,46 @@ class AccountServiceImpl @Inject constructor(
      * Log in
      */
     override suspend fun authenticate(email: String, password: String) {
-        auth.signInWithEmailAndPassword(email, password).await()
+        trace(AUTHENTICATE_TRACE) {
+            auth.signInWithEmailAndPassword(email, password).await()
+        }
     }
 
     override suspend fun sendRecoveryEmail(email: String) {
-        auth.sendPasswordResetEmail(email).await()
+        trace(SEND_RECOVERY_EMAIL_TRACE) {
+            auth.sendPasswordResetEmail(email).await()
+        }
     }
 
     /**
      * Sign up a new user with email and password
      */
     override suspend fun linkAccount(email: String, password: String) {
-        auth.createUserWithEmailAndPassword(email, password).await()
+        trace(LINK_ACCOUNT_TRACE) {
+            auth.createUserWithEmailAndPassword(email, password).await()
+        }
     }
 
     override suspend fun deleteAccount(email: String, password: String) {
         val credential = EmailAuthProvider.getCredential(email, password)
-        auth.currentUser!!.reauthenticate(credential).await()
-        auth.currentUser!!.delete().await()
+        trace(DELETE_ACCOUNT_TRACE) {
+            auth.currentUser!!.reauthenticate(credential).await()
+            auth.currentUser!!.delete().await()
+        }
     }
 
     override suspend fun signOut() {
-        auth.signOut()
+        trace(SIGN_OUT_TRACE) {
+            auth.signOut()
+        }
+    }
+
+    companion object {
+        private const val AUTHENTICATE_TRACE = "linkAccount"
+        private const val SEND_RECOVERY_EMAIL_TRACE = "linkAccount"
+        private const val LINK_ACCOUNT_TRACE = "linkAccount"
+        private const val DELETE_ACCOUNT_TRACE = "linkAccount"
+        private const val SIGN_OUT_TRACE = "linkAccount"
+
     }
 }

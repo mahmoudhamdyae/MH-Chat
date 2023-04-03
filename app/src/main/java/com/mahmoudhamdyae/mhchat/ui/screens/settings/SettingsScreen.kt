@@ -2,19 +2,25 @@ package com.mahmoudhamdyae.mhchat.ui.screens.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.common.ext.fieldModifier
-import com.mahmoudhamdyae.mhchat.ui.composable.*
+import com.mahmoudhamdyae.mhchat.ui.composable.BasicToolBar
+import com.mahmoudhamdyae.mhchat.ui.composable.DialogCancelButton
+import com.mahmoudhamdyae.mhchat.ui.composable.DialogConfirmButton
+import com.mahmoudhamdyae.mhchat.ui.composable.PasswordField
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
 
 object SettingsDestination: NavigationDestination {
@@ -39,7 +45,7 @@ fun SettingsScreen(
     Column(modifier = modifier) {
         BasicToolBar(
             title = SettingsDestination.titleRes,
-            canNavigate = true,
+            canNavigateUp = true,
             navigateUp = navigateUp
         )
         Button(onClick = {
@@ -54,7 +60,10 @@ fun SettingsScreen(
             title = { Text(stringResource(R.string.delete_account_title)) },
             text = {
                 Column(modifier = modifier) {
-                    Text(stringResource(R.string.delete_account_description))
+                    Text(
+                        text = stringResource(R.string.delete_account_description),
+                        style = TextStyle(color = MaterialTheme.colorScheme.error)
+                    )
                     Text(
                         stringResource(R.string.delete_account_description_enter_fields),
                         modifier = Modifier.padding(vertical = 8.dp)
