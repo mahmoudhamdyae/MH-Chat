@@ -28,8 +28,9 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.mahmoudhamdyae.mhchat.R
-import com.mahmoudhamdyae.mhchat.domain.models.OnBoardingItems
+import com.mahmoudhamdyae.mhchat.domain.models.OnBoardingItem
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInDestination
 import kotlinx.coroutines.launch
 
 object OnBoardingDestination: NavigationDestination {
@@ -42,21 +43,20 @@ object OnBoardingDestination: NavigationDestination {
 fun OnBoardingScreen(
     openAndPopUp: (String) -> Unit,
 ) {
-    val items = OnBoardingItems.getData()
+    val items = OnBoardingItem.getData()
     val scope = rememberCoroutineScope()
     val pageState = rememberPagerState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopSection(
+            isBackVisible = pageState.currentPage != 0,
             onBackClick = {
-                if (pageState.currentPage + 1 > 1) scope.launch {
-                    pageState.scrollToPage(pageState.currentPage - 1)
+                if (pageState.currentPage + 1 > 1) {
+                    scope.launch { pageState.animateScrollToPage(pageState.currentPage - 1) }
                 }
             },
             onSkipClick = {
-                if (pageState.currentPage + 1 < items.size) scope.launch {
-                    pageState.scrollToPage(items.size - 1)
-                }
+                openAndPopUp(LogInDestination.route)
             }
         )
 
@@ -67,27 +67,30 @@ fun OnBoardingScreen(
                 .fillMaxHeight(0.9f)
                 .fillMaxWidth()
         ) { page ->
-            OnBoardingItem(items = items[page])
+            OnBoardingItem(item = items[page])
         }
         BottomSection(size = items.size, index = pageState.currentPage) {
-            if (pageState.currentPage + 1 < items.size) scope.launch {
-                pageState.scrollToPage(pageState.currentPage + 1)
+            if (pageState.currentPage + 1 < items.size) {
+                scope.launch { pageState.animateScrollToPage(pageState.currentPage + 1) }
+            } else {
+                openAndPopUp(LogInDestination.route)
             }
         }
     }
 }
 
-@ExperimentalPagerApi
 @Composable
-fun TopSection(onBackClick: () -> Unit = {}, onSkipClick: () -> Unit = {}) {
+fun TopSection(isBackVisible: Boolean, onBackClick: () -> Unit, onSkipClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp)
     ) {
         // Back button
-        IconButton(onClick = onBackClick, modifier = Modifier.align(Alignment.CenterStart)) {
-            Icon(imageVector = Icons.Outlined.KeyboardArrowLeft, contentDescription = null)
+        if (isBackVisible) {
+            IconButton(onClick = onBackClick, modifier = Modifier.align(Alignment.CenterStart)) {
+                Icon(imageVector = Icons.Outlined.KeyboardArrowLeft, contentDescription = null)
+            }
         }
 
         // Skip Button
@@ -102,7 +105,7 @@ fun TopSection(onBackClick: () -> Unit = {}, onSkipClick: () -> Unit = {}) {
 }
 
 @Composable
-fun BottomSection(size: Int, index: Int, onButtonClick: () -> Unit = {}) {
+fun BottomSection(size: Int, index: Int, onButtonClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,7 +125,7 @@ fun BottomSection(size: Int, index: Int, onButtonClick: () -> Unit = {}) {
          }*/
 
         FloatingActionButton(
-            onClick = { /* do something */ },
+            onClick = onButtonClick,
             containerColor = Color.Black,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
@@ -163,30 +166,27 @@ fun Indicator(isSelected: Boolean) {
             .background(
                 color = if (isSelected) MaterialTheme.colorScheme.primary else Color(0XFFF8E2E7)
             )
-    ) {
-
-    }
+    )
 }
 
 @Composable
-fun OnBoardingItem(items: OnBoardingItems) {
+fun OnBoardingItem(item: OnBoardingItem) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxSize()
     ) {
         Image(
-            painter = painterResource(id = items.image),
-            contentDescription = "Image1",
+            painter = painterResource(id = item.image),
+            contentDescription = null,
             modifier = Modifier.padding(start = 50.dp, end = 50.dp)
         )
 
         Spacer(modifier = Modifier.height(25.dp))
 
         Text(
-            text = stringResource(id = items.title),
+            text = stringResource(id = item.title),
             style = MaterialTheme.typography.headlineMedium,
-            // fontSize = 24.sp,
             color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -195,7 +195,7 @@ fun OnBoardingItem(items: OnBoardingItems) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = stringResource(id = items.desc),
+            text = stringResource(id = item.description),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Light,
