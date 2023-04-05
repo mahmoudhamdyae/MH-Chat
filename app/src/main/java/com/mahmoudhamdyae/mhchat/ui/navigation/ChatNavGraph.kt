@@ -2,6 +2,7 @@ package com.mahmoudhamdyae.mhchat.ui.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.mahmoudhamdyae.mhchat.ui.ChatAppState
 import com.mahmoudhamdyae.mhchat.ui.composable.messagesViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.home.HomeDestination
@@ -10,6 +11,8 @@ import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInScreen
 import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesScreen
+import com.mahmoudhamdyae.mhchat.ui.screens.onboarding.OnBoardingDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.onboarding.OnBoardingScreen
 import com.mahmoudhamdyae.mhchat.ui.screens.profile.ProfileDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.profile.ProfileScreen
 import com.mahmoudhamdyae.mhchat.ui.screens.settings.SettingsDestination
@@ -24,6 +27,7 @@ import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersScreen
 /**
  * Provides Navigation graph for the application.
  */
+@ExperimentalPagerApi
 fun NavGraphBuilder.chatGraph(appState: ChatAppState) {
 
     val openScreen: (String) -> Unit = { route -> appState.navigate(route) }
@@ -84,6 +88,12 @@ fun NavGraphBuilder.chatGraph(appState: ChatAppState) {
     composable(ProfileDestination.route) {
         ProfileScreen(
             navigateUp = navigateUp
+        )
+    }
+
+    composable(OnBoardingDestination.route) {
+        OnBoardingScreen(
+            openAndPopUp = openAndPopUp
         )
     }
 }

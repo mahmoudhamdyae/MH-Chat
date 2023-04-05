@@ -17,18 +17,6 @@ class AccountServiceImpl @Inject constructor(
     override val currentUserEmail: String
         get() = auth.currentUser?.email.orEmpty()
 
-//    override val currentUserEmail: Flow<User>
-//        get() = callbackFlow {
-//            val listener =
-//                FirebaseAuth.AuthStateListener { auth ->
-//                    this.trySend(auth.currentUser?.let {
-//                        User(userId = it.uid, email = it.email!!)
-//                    } ?: User())
-//                }
-//            auth.addAuthStateListener(listener)
-//            awaitClose { auth.removeAuthStateListener(listener) }
-//        }
-
     override val hasUser: Boolean
         get() = auth.currentUser != null
 

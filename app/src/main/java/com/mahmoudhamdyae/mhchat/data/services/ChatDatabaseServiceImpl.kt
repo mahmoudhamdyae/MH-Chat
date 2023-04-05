@@ -53,9 +53,16 @@ class ChatDatabaseServiceImpl @Inject constructor(
         }
     }
 
+    override suspend fun delChat(chatId: String) {
+        trace(DELETE_CHAT) {
+            chatCollection.document(chatId).delete().await()
+        }
+    }
+
     companion object {
         private const val CHAT_COLLECTION = "chats"
         private const val CREATE_CHAT = "create_chat"
         private const val UPDATE_CHAT = "update_chat"
+        private const val DELETE_CHAT = "delete_chat"
     }
 }

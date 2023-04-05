@@ -89,6 +89,11 @@ dependencies {
 
     // Coil
     implementation 'io.coil-kt:coil-compose:2.3.0'
+
+    implementation 'com.google.accompanist:accompanist-pager:0.24.13-rc'
+
+    // Data Store
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 }
 
 kapt {

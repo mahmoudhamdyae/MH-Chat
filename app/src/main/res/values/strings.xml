@@ -7,10 +7,19 @@
     <string name="home_screen_title">MH Chat</string>
     <string name="log_in_screen_title">Sign In</string>
     <string name="sign_up_screen_title">Sign Up</string>
+    <string name="on_boarding_screen_title">OnBoarding</string>
     <string name="users_screen_title">Users</string>
     <string name="settings_screen_title">Settings</string>
     <string name="profile_screen_title">Profile</string>
     <string name="messages_screen_title">Messages</string>
+
+    <!-- OnBoarding Screen -->
+    <string name="on_boarding_title_1">Send Free Messages</string>
+    <string name="on_boarding_title_2">Connect Your Friends</string>
+    <string name="on_boarding_title_3">Make Group Chat</string>
+    <string name="on_boarding_text_1">You can connect with the people around the world and chat with them</string>
+    <string name="on_boarding_text_2">Join us with other millions of people and find your friends</string>
+    <string name="on_boarding_text_3">Join your friends with groups of your own</string>
 
     <!-- Auth -->
     <string name="user_name">User name</string>

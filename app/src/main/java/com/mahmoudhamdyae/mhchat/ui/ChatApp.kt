@@ -14,11 +14,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
 import com.mahmoudhamdyae.mhchat.ui.navigation.chatGraph
 import com.mahmoudhamdyae.mhchat.ui.screens.home.HomeDestination
 import kotlinx.coroutines.CoroutineScope
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ChatApp(
     modifier: Modifier = Modifier

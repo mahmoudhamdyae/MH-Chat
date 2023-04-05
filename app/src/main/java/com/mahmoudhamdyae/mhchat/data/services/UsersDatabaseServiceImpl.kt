@@ -56,10 +56,20 @@ class UsersDatabaseServiceImpl @Inject constructor(
         }
     }
 
+    override suspend fun delUserChat(toUserId: String, chatId: String) {
+        trace(DELETE_USER_CHAT_TRACE) {
+            userCollection.document(toUserId).update(
+                "chats", FieldValue.arrayRemove(chatId)
+            )
+            userCollection.document(toUserId).collection("chats").whereArrayContains("chatId", chatId)
+        }
+    }
+
     companion object {
         private const val USER_COLLECTION = "users"
         private const val CREATE_USER_TRACE = "create_user"
         private const val UPDATE_USER_TRACE = "update_user"
         private const val CREATE_CHAT_IN_USER_TRACE = "create_chat_in_users"
+        private const val DELETE_USER_CHAT_TRACE = "delete_user_chat"
     }
 }

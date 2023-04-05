@@ -1,6 +1,6 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.home
 
-import androidx.compose.runtime.mutableStateOf
+import com.mahmoudhamdyae.mhchat.data.services.PreferencesRepository
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
@@ -9,7 +9,12 @@ import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.onboarding.OnBoardingDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,15 +22,30 @@ class HomeViewModel @Inject constructor(
     private val accountService: AccountService,
     private val databaseService: UsersDatabaseService,
     private val chatDatabaseService: ChatDatabaseService,
+    preferencesRepository: PreferencesRepository,
     logService: LogService
 ): ChatViewModel(logService) {
 
-    var uiState = mutableStateOf(HomeUiState())
-        private set
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState>
+        get() = _uiState
+
+    private val isFirstTime: Flow<Boolean> =
+        preferencesRepository.isFirstTime
 
     fun initialize(navigate: (String) -> Unit) {
         if (!accountService.hasUser) {
-            navigate(LogInDestination.route)
+            launchCatching {
+                isFirstTime.collect {
+                    if (it) {
+                        navigate(OnBoardingDestination.route)
+                        this.cancel()
+                    } else {
+                        navigate(LogInDestination.route)
+                        this.cancel()
+                    }
+                }
+            }
         } else {
             getChats()
         }
@@ -37,11 +57,11 @@ class HomeViewModel @Inject constructor(
                 it?.chats?.forEach { userChat ->
                     // Get Users
                     databaseService.getUser(userChat.toUserId).collect { user ->
-                        uiState.value.users?.add(user)
+                        _uiState.value.users?.add(user)
                     }
                     // Get Chats
                     chatDatabaseService.getLastMessage(userChat.chatId).collect { message ->
-                        uiState.value.lastMessages?.add(message)
+                        _uiState.value.lastMessages?.add(message)
                     }
                 }
             }
@@ -56,7 +76,6 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onItemClick(user: User, navigateTo: (String) -> Unit) {
-        val chatId = "fde18e5a-bf96-4932-b050-f5aa0671133d"
         navigateTo("${MessagesDestination.route}/${user.userId}")
     }
 }

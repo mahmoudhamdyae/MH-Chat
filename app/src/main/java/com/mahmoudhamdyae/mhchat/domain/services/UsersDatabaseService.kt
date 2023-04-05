@@ -12,4 +12,5 @@ interface UsersDatabaseService {
     suspend fun saveUser(user: User)
     suspend fun updateProfileImage(imageUri: String)
     suspend fun createChat(toUserId: String, chatId: String)
+    suspend fun delUserChat(toUserId: String, chatId: String)
 }

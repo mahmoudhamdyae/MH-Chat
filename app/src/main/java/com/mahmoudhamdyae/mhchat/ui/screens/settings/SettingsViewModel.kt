@@ -4,8 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
+import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
-import com.mahmoudhamdyae.mhchat.domain.services.StorageService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInDestination
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val accountService: AccountService,
     private val databaseService: UsersDatabaseService,
-    private val storageService: StorageService,
+    private val chatDatabaseService: ChatDatabaseService,
     logService: LogService
 ): ChatViewModel(logService) {
 
@@ -32,6 +32,14 @@ class SettingsViewModel @Inject constructor(
     fun onDeleteAccount(password: String, navigate: (String) -> Unit) {
         launchCatching {
             if (validatePassword(password)) {
+                databaseService.getCurrentUser().collect {
+                    val userChats = it?.chats
+                    userChats?.forEach {  userChat ->
+                        databaseService.delUserChat(userChat.toUserId, userChat.chatId)
+                        chatDatabaseService.delChat(userChat.chatId)
+                    }
+                }
+
                 accountService.deleteAccount(currentUserEmail, password)
                 navigate(LogInDestination.route)
             }

@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.domain.models.Message
 import com.mahmoudhamdyae.mhchat.domain.models.User
@@ -40,7 +41,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle(initialValue = HomeUiState())
     var showWarningDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -73,7 +74,6 @@ fun HomeScreen(
     { contentPadding ->
         if (uiState.users == null || uiState.users!!.isEmpty()) {
             EmptyScreen()
-            ChatListItem(user = User(), message = Message(), openScreen = openScreen, onItemClick = viewModel::onItemClick)
         } else {
             ChatList(
                 users = uiState.users!!,
