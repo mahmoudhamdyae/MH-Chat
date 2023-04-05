@@ -24,9 +24,9 @@ import com.mahmoudhamdyae.mhchat.domain.models.Message
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.ui.composable.*
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
-import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.settings.SettingsDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersDestination
+import java.util.*
 
 object HomeDestination: NavigationDestination {
     override val route: String = "home"
@@ -73,11 +73,13 @@ fun HomeScreen(
     { contentPadding ->
         if (uiState.users == null || uiState.users!!.isEmpty()) {
             EmptyScreen()
+            ChatListItem(user = User(), message = Message(), openScreen = openScreen, onItemClick = viewModel::onItemClick)
         } else {
             ChatList(
                 users = uiState.users!!,
                 messages = uiState.lastMessages!!,
                 openScreen = openScreen,
+                onItemClick = viewModel::onItemClick,
                 modifier = Modifier.padding(contentPadding)
             )
         }
@@ -105,7 +107,8 @@ fun ChatList(
     users: List<User?>,
     messages: List<Message?>,
     openScreen: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onItemClick: (User, (String) -> Unit) -> Unit,
 ) {
     val list = users.zip(messages)
     val visibleState = remember {
@@ -126,6 +129,7 @@ fun ChatList(
         LazyColumn(modifier = modifier) {
             itemsIndexed(list) { index, list ->
                 ChatListItem(
+                    onItemClick = onItemClick,
                     openScreen = openScreen,
                     user = list.first,
                     message = list.second,
@@ -153,6 +157,7 @@ fun ChatListItem(
     user: User?,
     message: Message?,
     openScreen: (String) -> Unit,
+    onItemClick: (User, (String) -> Unit) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (user != null && message != null) {
@@ -163,7 +168,7 @@ fun ChatListItem(
                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant
             ),
             modifier = modifier,
-            onClick = { openScreen("${MessagesDestination.route}/${user.userId}") },
+            onClick = { onItemClick(user, openScreen) },
         ) {
             Row(
                 modifier = Modifier

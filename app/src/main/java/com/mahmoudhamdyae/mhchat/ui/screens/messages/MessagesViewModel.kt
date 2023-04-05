@@ -1,53 +1,32 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.messages
 
-import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
 import com.mahmoudhamdyae.mhchat.domain.models.Chat
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
-import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-@HiltViewModel
-class MessagesViewModel @Inject constructor(
-    private val usersDatabaseService: UsersDatabaseService,
+class MessagesViewModel @AssistedInject constructor(
     private val chatDatabaseService: ChatDatabaseService,
+    @Assisted("chatId") private val chatId: String,
+    @Assisted("toUserId") private val toUserId: String,
     logService: LogService
 ): ChatViewModel(logService) {
 
-    var uiState = mutableStateOf(MessagesUiState())
-        private set
-    var chat: Flow<Chat?> = chatDatabaseService.chat(uiState.value.chatId)
+    var chat: Flow<Chat?> = chatDatabaseService.chat(chatId)
 
-    fun createChat(toUserId: String) {
-        launchCatching {
-            // Returns null if it is first time
-            val chatIdOrNull = usersDatabaseService.getCurrentUser().map { user ->
-                user?.chats?.firstOrNull { userChat ->
-                    userChat.toUserId == toUserId
-                }?.chatId
-            }.firstOrNull()
-            if (!chatIdOrNull.isNullOrEmpty()) { // Not null
-                // Not first time to chat between these two users
-                uiState.value.chatId = chatIdOrNull
-            } else { // Null
-                // First time to chat between these two users
-                chatDatabaseService.createChat(toUserId, uiState.value.chatId)
-            }
-        }
-    }
-
-    fun onMessageSend(messageBody: String, toUserId: String) {
+    fun onMessageSend(messageBody: String) {
         if (validateMessageBody(messageBody)) {
             launchCatching {
                 chatDatabaseService.updateChat(
-                    chatId = uiState.value.chatId,
+                    chatId = chatId,
                     toUserId = toUserId,
                     messageBody = messageBody
                 )
@@ -61,6 +40,27 @@ class MessagesViewModel @Inject constructor(
         } else {
             SnackBarManager.showMessage(R.string.message_empty)
             false
+        }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted("chatId") chatId: String,
+            @Assisted("toUserId") toUserId: String,
+        ): MessagesViewModel
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    companion object {
+        fun provideFactory(
+            assistedFactory: Factory,
+            chatId: String,
+            toUserId: String,
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return assistedFactory.create(chatId, toUserId) as T
+            }
         }
     }
 }

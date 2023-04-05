@@ -1,10 +1,9 @@
 package com.mahmoudhamdyae.mhchat.ui.navigation
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.mahmoudhamdyae.mhchat.ui.ChatAppState
+import com.mahmoudhamdyae.mhchat.ui.composable.messagesViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.home.HomeDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.home.HomeScreen
 import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInDestination
@@ -69,14 +68,16 @@ fun NavGraphBuilder.chatGraph(appState: ChatAppState) {
 
     composable(
         route = MessagesDestination.routeWithArgs,
-        arguments = listOf(navArgument(MessagesDestination.toUserIdArg) {
-            type = NavType.StringType
-        })
+        arguments = MessagesDestination.arguments
     ) { navBackStack ->
         val toUserId = navBackStack.arguments?.getString(MessagesDestination.toUserIdArg)!!
+        val chatId = navBackStack.arguments?.getString(MessagesDestination.chatIdArg)!!
         MessagesScreen(
-            toUserId = toUserId,
-            navigateUp = navigateUp
+            navigateUp = navigateUp,
+            viewModel = messagesViewModel(
+                chatId = chatId,//"fde18e5a-bf96-4932-b050-f5aa0671133d",
+                toUserId = toUserId,
+            )
         )
     }
 

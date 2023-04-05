@@ -21,7 +21,6 @@ import com.mahmoudhamdyae.mhchat.ui.composable.BasicToolBar
 import com.mahmoudhamdyae.mhchat.ui.composable.EmptyScreen
 import com.mahmoudhamdyae.mhchat.ui.composable.ProfileImage
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
-import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 
 object UsersDestination: NavigationDestination {
     override val route: String = "users"
@@ -35,7 +34,7 @@ fun UsersScreen(
     modifier: Modifier = Modifier,
     viewModel: UsersViewModel = hiltViewModel()
 ) {
-    val users = viewModel.users.collectAsStateWithLifecycle(emptyList())
+    val users = viewModel.users.collectAsStateWithLifecycle(initialValue = emptyList())
 
     Column(modifier = modifier) {
         BasicToolBar(
@@ -48,6 +47,7 @@ fun UsersScreen(
         } else {
             UsersList(
                 openScreen = openScreen,
+                onItemClick = viewModel::onItemClick,
                 users = users.value,
                 modifier = Modifier.fillMaxSize()
             )
@@ -59,6 +59,7 @@ fun UsersScreen(
 @Composable
 fun UsersList(
     openScreen: (String) -> Unit,
+    onItemClick: (User, (String) -> Unit) -> Unit,
     users: List<User>,
     modifier: Modifier = Modifier,
 ) {
@@ -81,6 +82,7 @@ fun UsersList(
             itemsIndexed(users) { index, user ->
                 UserListItem(
                     openScreen = openScreen,
+                    onItemClick = onItemClick,
                     user = user,
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -104,6 +106,7 @@ fun UsersList(
 @Composable
 fun UserListItem(
     openScreen: (String) -> Unit,
+    onItemClick: (User, (String) -> Unit) -> Unit,
     user: User,
     modifier: Modifier = Modifier
 ) {
@@ -114,7 +117,7 @@ fun UserListItem(
             contentColor = MaterialTheme.colorScheme.onSurfaceVariant
         ),
         modifier = modifier,
-        onClick = { openScreen("${MessagesDestination.route}/${user.userId}") },
+        onClick = { onItemClick(user, openScreen) },
     ) {
         Row(
             modifier = Modifier

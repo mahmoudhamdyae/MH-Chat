@@ -22,10 +22,9 @@ class ChatDatabaseServiceImpl @Inject constructor(
 
     private val chatCollection = firestore.collection(CHAT_COLLECTION)
 
-    override var chat: (String) -> Flow<Chat?> = { chatId ->
-        chatCollection.document(chatId).snapshots().map { snapshot ->
-            snapshot.toObject()
-        }
+    override val chat: (String) -> Flow<Chat?>
+        get() = { chatId ->
+            chatCollection.document(chatId).snapshots().map { snapshot -> snapshot.toObject() }
     }
 
     override suspend fun getLastMessage(chatId: String): Flow<Message?> {

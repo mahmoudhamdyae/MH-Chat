@@ -21,31 +21,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.domain.models.Chat
 import com.mahmoudhamdyae.mhchat.domain.models.Message
 import com.mahmoudhamdyae.mhchat.ui.composable.BasicToolBar
 import com.mahmoudhamdyae.mhchat.ui.composable.EmptyScreen
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
+import java.util.*
 
 object MessagesDestination: NavigationDestination {
     override val route: String = "messages"
     override val titleRes: Int = R.string.messages_screen_title
     const val toUserIdArg = "userId"
-    val routeWithArgs = "$route/{$toUserIdArg}"
+    const val chatIdArg = "chatId"
+    val routeWithArgs = "$route/{$toUserIdArg}/{$chatIdArg}"
+    val arguments = listOf(
+        navArgument(toUserIdArg) { type = NavType.StringType },
+        navArgument(chatIdArg) { type = NavType.StringType}
+    )
 }
 
 @Composable
 fun MessagesScreen(
-    toUserId: String,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MessagesViewModel = hiltViewModel(),
+    viewModel: MessagesViewModel,
 ) {
-    val chat = viewModel.chat.collectAsStateWithLifecycle(initialValue = Chat())
-    viewModel.createChat(toUserId)
+    val messages: List<Message>? =
+        viewModel.chat.collectAsStateWithLifecycle(initialValue = Chat()).value?.messages
 
     Column(modifier = modifier) {
         BasicToolBar(
@@ -54,14 +60,13 @@ fun MessagesScreen(
             navigateUp = navigateUp
         )
         Spacer(modifier = Modifier.weight(1f))
-        val messages = chat.value?.messages
         if (messages == null || messages.isEmpty()) {
             EmptyScreen()
         } else {
             MessagesList(messages = messages)
         }
         Footer(sendMessage = {
-            viewModel.onMessageSend(it, toUserId)
+            viewModel.onMessageSend(it)
         })
     }
 }
@@ -137,7 +142,8 @@ fun Footer(
                     sendMessage(messageBody)
                     messageBody = ""
                 }
-            )
+            ),
+            modifier = Modifier.weight(1f)
         )
         IconButton(onClick = {
             sendMessage(messageBody)

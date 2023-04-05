@@ -1,6 +1,7 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.home
 
 import androidx.compose.runtime.mutableStateOf
+import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.models.UserChat
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
@@ -8,6 +9,7 @@ import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -55,5 +57,10 @@ class HomeViewModel @Inject constructor(
             accountService.signOut()
             navigate(LogInDestination.route)
         }
+    }
+
+    fun onItemClick(user: User, navigateTo: (String) -> Unit) {
+        val chatId = "fde18e5a-bf96-4932-b050-f5aa0671133d"
+        navigateTo("${MessagesDestination.route}/${user.userId}")
     }
 }

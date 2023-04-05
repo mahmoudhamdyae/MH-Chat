@@ -23,8 +23,7 @@ class UsersDatabaseServiceImpl @Inject constructor(
     private val userCollection = firestore.collection(USER_COLLECTION)
 
     override val users: Flow<List<User>>
-        get() =
-            userCollection.snapshots().map { snapshot -> snapshot.toObjects() }
+        get() = userCollection.snapshots().map { snapshot -> snapshot.toObjects() }
 
     override suspend fun getUser(userId: String): Flow<User?> {
         return userCollection.document(userId).snapshots().map { snapshot -> snapshot.toObject() }
@@ -58,7 +57,7 @@ class UsersDatabaseServiceImpl @Inject constructor(
                 "chats", FieldValue.arrayUnion(UserChat(toUserId, chatId)),
             ).await()
             userCollection.document(toUserId).update(
-                "chats", FieldValue.arrayUnion(UserChat(toUserId, chatId)),
+                "chats", FieldValue.arrayUnion(UserChat(accountService.currentUserId, chatId)),
             ).await()
         }
     }
