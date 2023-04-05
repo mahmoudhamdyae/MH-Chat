@@ -3,7 +3,6 @@ package com.mahmoudhamdyae.mhchat.ui.screens.settings
 import androidx.lifecycle.viewModelScope
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
-import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.services.StorageService
@@ -22,20 +21,18 @@ class SettingsViewModel @Inject constructor(
     logService: LogService
 ): ChatViewModel(logService) {
 
-    private var user = User()
+    private lateinit var currentUserEmail: String
 
     fun initialize() {
         viewModelScope.launch {
-            accountService.currentUser.collect { user = it }
+            currentUserEmail = accountService.currentUserEmail
         }
     }
 
     fun onDeleteAccount(password: String, navigate: (String) -> Unit) {
         launchCatching {
             if (validatePassword(password)) {
-//                databaseService.deleteUser()
-//                storageService.delImage(accountService.currentUserId)
-                accountService.deleteAccount(user.email, password)
+                accountService.deleteAccount(currentUserEmail, password)
                 navigate(LogInDestination.route)
             }
         }

@@ -2,12 +2,8 @@ package com.mahmoudhamdyae.mhchat.data.services
 
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.trace
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -18,20 +14,23 @@ class AccountServiceImpl @Inject constructor(
     override val currentUserId: String
         get() = auth.currentUser?.uid.orEmpty()
 
+    override val currentUserEmail: String
+        get() = auth.currentUser?.email.orEmpty()
+
+//    override val currentUserEmail: Flow<User>
+//        get() = callbackFlow {
+//            val listener =
+//                FirebaseAuth.AuthStateListener { auth ->
+//                    this.trySend(auth.currentUser?.let {
+//                        User(userId = it.uid, email = it.email!!)
+//                    } ?: User())
+//                }
+//            auth.addAuthStateListener(listener)
+//            awaitClose { auth.removeAuthStateListener(listener) }
+//        }
+
     override val hasUser: Boolean
         get() = auth.currentUser != null
-
-    override val currentUser: Flow<User>
-        get() = callbackFlow {
-            val listener =
-                FirebaseAuth.AuthStateListener { auth ->
-                    this.trySend(auth.currentUser?.let {
-                        User(userId = it.uid, email = it.email!!)
-                    } ?: User())
-                }
-            auth.addAuthStateListener(listener)
-            awaitClose { auth.removeAuthStateListener(listener) }
-        }
 
     /**
      * Log in

@@ -1,13 +1,10 @@
 package com.mahmoudhamdyae.mhchat.domain.services
 
-import com.mahmoudhamdyae.mhchat.domain.models.User
-import kotlinx.coroutines.flow.Flow
-
 interface AccountService {
-    val currentUserId: String
-    val hasUser: Boolean
 
-    val currentUser: Flow<User>
+    val currentUserId: String
+    val currentUserEmail: String
+    val hasUser: Boolean
 
     suspend fun authenticate(email: String, password: String)
     suspend fun sendRecoveryEmail(email: String)

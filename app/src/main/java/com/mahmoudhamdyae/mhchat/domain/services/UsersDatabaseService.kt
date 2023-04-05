@@ -11,6 +11,5 @@ interface UsersDatabaseService {
     suspend fun getCurrentUser(): Flow<User?>
     suspend fun saveUser(user: User)
     suspend fun updateProfileImage(imageUri: String)
-    suspend fun deleteUser()
     suspend fun createChat(toUserId: String, chatId: String)
 }

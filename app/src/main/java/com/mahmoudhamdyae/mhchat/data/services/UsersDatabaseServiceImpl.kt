@@ -45,12 +45,6 @@ class UsersDatabaseServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteUser() {
-        trace(DELETE_USER_TRACE) {
-            userCollection.document(accountService.currentUserId).delete().await()
-        }
-    }
-
     override suspend fun createChat(toUserId: String, chatId: String) {
         trace(CREATE_CHAT_IN_USER_TRACE) {
             userCollection.document(accountService.currentUserId).update(
@@ -66,7 +60,6 @@ class UsersDatabaseServiceImpl @Inject constructor(
         private const val USER_COLLECTION = "users"
         private const val CREATE_USER_TRACE = "create_user"
         private const val UPDATE_USER_TRACE = "update_user"
-        private const val DELETE_USER_TRACE = "delete_user"
         private const val CREATE_CHAT_IN_USER_TRACE = "create_chat_in_users"
     }
 }

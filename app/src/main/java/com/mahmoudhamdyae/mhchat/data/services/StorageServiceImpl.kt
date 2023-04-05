@@ -26,17 +26,8 @@ class StorageServiceImpl @Inject constructor(
         return profileImagesRef.child("$userId.jpg").downloadUrl.await()
     }
 
-    override suspend fun delImage(userId: String) {
-        trace(DELETE_IMAGE_TRACE) {
-            try {
-                profileImagesRef.child("$userId.jpg").delete().await()
-            } catch (_: Exception) {}
-        }
-    }
-
     companion object {
         private const val IMAGE_STORAGE_REF = "images"
         private const val UPLOAD_IMAGE_TRACE = "upload_image"
-        private const val DELETE_IMAGE_TRACE = "delete_image"
     }
 }

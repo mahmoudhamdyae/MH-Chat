@@ -2,7 +2,6 @@ package com.mahmoudhamdyae.mhchat.ui.screens.home
 
 import androidx.compose.runtime.mutableStateOf
 import com.mahmoudhamdyae.mhchat.domain.models.User
-import com.mahmoudhamdyae.mhchat.domain.models.UserChat
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
@@ -25,7 +24,7 @@ class HomeViewModel @Inject constructor(
         private set
 
     fun initialize(navigate: (String) -> Unit) {
-        if (accountService.currentUserId.isEmpty()) {
+        if (!accountService.hasUser) {
             navigate(LogInDestination.route)
         } else {
             getChats()
@@ -34,19 +33,16 @@ class HomeViewModel @Inject constructor(
 
     private fun getChats() {
         launchCatching {
-            var currentUserChats: List<UserChat>? = null
             databaseService.getCurrentUser().collect {
-                currentUserChats = it?.chats
-            }
-
-            currentUserChats?.forEach { userChat ->
-                // Get Users
-                databaseService.getUser(userChat.toUserId).collect {
-                    uiState.value.users?.add(it)
-                }
-                // Get Chats
-                chatDatabaseService.getLastMessage(userChat.chatId).collect {
-                    uiState.value.lastMessages?.add(it)
+                it?.chats?.forEach { userChat ->
+                    // Get Users
+                    databaseService.getUser(userChat.toUserId).collect { user ->
+                        uiState.value.users?.add(user)
+                    }
+                    // Get Chats
+                    chatDatabaseService.getLastMessage(userChat.chatId).collect { message ->
+                        uiState.value.lastMessages?.add(message)
+                    }
                 }
             }
         }
