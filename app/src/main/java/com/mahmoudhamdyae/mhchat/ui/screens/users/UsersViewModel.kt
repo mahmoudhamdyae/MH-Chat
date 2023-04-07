@@ -8,8 +8,6 @@ import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import java.util.*
 import javax.inject.Inject
@@ -30,9 +28,6 @@ class UsersViewModel @Inject constructor(
         }
     }
 
-    var toast = MutableStateFlow<String?>("")
-        private set
-
     fun onItemClick(user: User, navigateTo: (String) -> Unit) {
         getChatId(user) { chatId ->
             navigateTo("${MessagesDestination.route}/${user.userId}/${chatId}")
@@ -45,9 +40,7 @@ class UsersViewModel @Inject constructor(
                 userChats?.forEach { userChat ->
                     if (userChat != null) {
                         if (userChat.toUserId == user.userId) {
-                            toast.value = userChat.chatId
                             navigate(userChat.chatId)
-                            this.cancel()
                             return@collect
                         }
                     }

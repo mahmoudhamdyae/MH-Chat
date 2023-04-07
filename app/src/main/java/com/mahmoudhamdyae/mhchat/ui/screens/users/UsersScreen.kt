@@ -1,6 +1,5 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.users
 
-import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring.DampingRatioLowBouncy
@@ -12,7 +11,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,9 +35,6 @@ fun UsersScreen(
     viewModel: UsersViewModel = hiltViewModel()
 ) {
     val users = viewModel.users.collectAsStateWithLifecycle(initialValue = emptyList())
-
-    val toastMessage = viewModel.toast.collectAsStateWithLifecycle()
-    Toast.makeText(LocalContext.current, toastMessage.value.toString(), Toast.LENGTH_SHORT).show()
 
     Column(modifier = modifier) {
         BasicToolBar(
