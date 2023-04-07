@@ -35,7 +35,6 @@ class SettingsViewModel @Inject constructor(
                 databaseService.getCurrentUser().collect {
                     val userChats = it?.chats
                     userChats?.forEach {  userChat ->
-                        databaseService.delUserChat(userChat.toUserId, userChat.chatId)
                         chatDatabaseService.delChat(userChat.chatId)
                     }
                 }

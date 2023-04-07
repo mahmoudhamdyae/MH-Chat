@@ -9,9 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -27,6 +25,7 @@ import com.mahmoudhamdyae.mhchat.ui.composable.*
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.settings.SettingsDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersDestination
+import kotlinx.coroutines.launch
 import java.util.*
 
 object HomeDestination: NavigationDestination {
@@ -41,12 +40,52 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle(initialValue = HomeUiState())
-    var showWarningDialog by remember { mutableStateOf(false) }
-
     LaunchedEffect(Unit) {
         viewModel.initialize(openAndPopUp)
     }
+
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val items = listOf(Icons.Default.Favorite, Icons.Default.Face, Icons.Default.Email)
+    val selectedItem = remember { mutableStateOf(items[0]) }
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Spacer(Modifier.height(12.dp))
+                items.forEach { item ->
+                    NavigationDrawerItem(
+                        icon = { Icon(item, contentDescription = null) },
+                        label = { Text(item.name) },
+                        selected = item == selectedItem.value,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            selectedItem.value = item
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                }
+            }
+        }) {
+        HomeScreenContent(
+            viewModel = viewModel,
+            openScreen = openScreen,
+            openDrawer = { scope.launch { drawerState.open() } },
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+fun HomeScreenContent(
+    viewModel: HomeViewModel,
+    openScreen: (String) -> Unit,
+    openDrawer: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val users by viewModel.users.collectAsStateWithLifecycle()
+    val lastMessages by viewModel.lastMessages.collectAsStateWithLifecycle()
+    var showWarningDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -59,6 +98,7 @@ fun HomeScreen(
                 openScreen(SettingsDestination.route)
             }),
             onMainScreen = true,
+            openDrawer = openDrawer
         ) },
         floatingActionButton = {
             FloatingActionButton(
@@ -69,15 +109,15 @@ fun HomeScreen(
                 }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(id = R.string.fab_add_content_description))
             }
-        }
+        },
     )
     { contentPadding ->
-        if (uiState.users == null || uiState.users!!.isEmpty()) {
-            EmptyScreen()
+        if (users.isEmpty()) {
+            EmptyScreen(modifier = modifier.padding(contentPadding))
         } else {
             ChatList(
-                users = uiState.users!!,
-                messages = uiState.lastMessages!!,
+                users = users,
+                messages = lastMessages,
                 openScreen = openScreen,
                 onItemClick = viewModel::onItemClick,
                 modifier = Modifier.padding(contentPadding)
@@ -185,12 +225,12 @@ fun ChatListItem(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = user.userName,
-                        style = MaterialTheme.typography.displayLarge,
+                        style = MaterialTheme.typography.displayMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = message.body,
-                        style = MaterialTheme.typography.displayMedium,
+                        style = MaterialTheme.typography.displaySmall,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }

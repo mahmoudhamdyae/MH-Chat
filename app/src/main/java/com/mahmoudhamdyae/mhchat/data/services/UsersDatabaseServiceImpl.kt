@@ -1,6 +1,5 @@
 package com.mahmoudhamdyae.mhchat.data.services
 
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.snapshots
 import com.google.firebase.firestore.ktx.toObject
@@ -25,6 +24,11 @@ class UsersDatabaseServiceImpl @Inject constructor(
     override val users: Flow<List<User>>
         get() = userCollection.snapshots().map { snapshot -> snapshot.toObjects() }
 
+    override val userChats: Flow<List<UserChat?>?>
+        get() =
+            userCollection.document(accountService.currentUserId).collection(CHATS_COLLECTION)
+                .snapshots().map { snapshot -> snapshot.toObjects() }
+
     override suspend fun getUser(userId: String): Flow<User?> {
         return userCollection.document(userId).snapshots().map { snapshot -> snapshot.toObject() }
     }
@@ -41,35 +45,27 @@ class UsersDatabaseServiceImpl @Inject constructor(
 
     override suspend fun updateProfileImage(imageUri: String) {
         trace(UPDATE_USER_TRACE) {
-            userCollection.document(accountService.currentUserId).update("imageUrl", imageUri).await()
+            userCollection.document(accountService.currentUserId)
+                .update("imageUrl", imageUri).await()
         }
     }
 
     override suspend fun createChat(toUserId: String, chatId: String) {
         trace(CREATE_CHAT_IN_USER_TRACE) {
-            userCollection.document(accountService.currentUserId).update(
-                "chats", FieldValue.arrayUnion(UserChat(toUserId, chatId)),
-            ).await()
-            userCollection.document(toUserId).update(
-                "chats", FieldValue.arrayUnion(UserChat(accountService.currentUserId, chatId)),
-            ).await()
-        }
-    }
+            userCollection.document(accountService.currentUserId).collection(CHATS_COLLECTION)
+                .document(toUserId).set(UserChat(toUserId, chatId)).await()
 
-    override suspend fun delUserChat(toUserId: String, chatId: String) {
-        trace(DELETE_USER_CHAT_TRACE) {
-            userCollection.document(toUserId).update(
-                "chats", FieldValue.arrayRemove(chatId)
-            )
-            userCollection.document(toUserId).collection("chats").whereArrayContains("chatId", chatId)
+            userCollection.document(toUserId).collection(CHATS_COLLECTION)
+                .document(accountService.currentUserId).
+                set(UserChat(accountService.currentUserId, chatId)).await()
         }
     }
 
     companion object {
         private const val USER_COLLECTION = "users"
+        private const val CHATS_COLLECTION = "chats"
         private const val CREATE_USER_TRACE = "create_user"
         private const val UPDATE_USER_TRACE = "update_user"
         private const val CREATE_CHAT_IN_USER_TRACE = "create_chat_in_users"
-        private const val DELETE_USER_CHAT_TRACE = "delete_user_chat"
     }
 }

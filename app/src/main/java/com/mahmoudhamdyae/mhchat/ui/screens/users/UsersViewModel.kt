@@ -8,6 +8,8 @@ import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import java.util.*
 import javax.inject.Inject
@@ -16,34 +18,50 @@ import javax.inject.Inject
 class UsersViewModel @Inject constructor(
     accountService: AccountService,
     private val chatDatabaseService: ChatDatabaseService,
-    databaseService: UsersDatabaseService,
+    private val usersDatabaseService: UsersDatabaseService,
     logService: LogService
 ): ChatViewModel(logService) {
 
     private val currentUserId = accountService.currentUserId
 
-    val users = databaseService.users.map {
+    val users = usersDatabaseService.users.map {
         it.filter { user ->
             user.userId != currentUserId
         }
     }
 
+    var toast = MutableStateFlow<String?>("")
+        private set
+
     fun onItemClick(user: User, navigateTo: (String) -> Unit) {
-        navigateTo("${MessagesDestination.route}/${user.userId}/${getChatId(user)}")
+        getChatId(user) { chatId ->
+            navigateTo("${MessagesDestination.route}/${user.userId}/${chatId}")
+        }
     }
 
-    private fun getChatId(user: User): String {
-        val chatId = user.chats?.firstOrNull() {
-            it.toUserId == currentUserId
-        }?.chatId
-
-        return if (chatId == null) {
-            val newChatId = UUID.randomUUID().toString()
-            createChat(user.userId, newChatId)
-            newChatId
-        } else {
-            chatId
+    private fun getChatId(user: User, navigate: (String) -> Unit) {
+        launchCatching {
+            usersDatabaseService.userChats.collect { userChats ->
+                userChats?.forEach { userChat ->
+                    if (userChat != null) {
+                        if (userChat.toUserId == user.userId) {
+                            toast.value = userChat.chatId
+                            navigate(userChat.chatId)
+                            this.cancel()
+                            return@collect
+                        }
+                    }
+                }
+                createNewId(user.userId, navigate)
+            }
         }
+    }
+
+    private fun createNewId(toUserId: String, navigate: (String) -> Unit): String {
+        val newChatId = UUID.randomUUID().toString()
+        createChat(toUserId, newChatId)
+        navigate(newChatId)
+        return newChatId
     }
 
     private fun createChat(toUserId: String, chatId: String) {

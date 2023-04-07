@@ -27,12 +27,13 @@ class ChatDatabaseServiceImpl @Inject constructor(
             chatCollection.document(chatId).snapshots().map { snapshot -> snapshot.toObject() }
     }
 
-    override suspend fun getLastMessage(chatId: String): Flow<Message?> {
-        return chatCollection.document(chatId).snapshots().map { snapshot ->
-            val chat = snapshot.toObject() as Chat?
-            chat?.messages?.last()
+    override val lastMessage: (String) -> Flow<Message?>
+        get() = { chatId ->
+            chatCollection.document(chatId).snapshots().map { snapshot ->
+                val chat = snapshot.toObject() as Chat?
+                chat?.messages?.last()
+            }
         }
-    }
 
     override suspend fun createChat(toUserId: String, chatId: String) {
         val chat = Chat(mutableListOf(), chatId)

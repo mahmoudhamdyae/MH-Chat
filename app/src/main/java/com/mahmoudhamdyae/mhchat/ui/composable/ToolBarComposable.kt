@@ -52,6 +52,7 @@ fun ActionToolbar(
     canNavigateUp: Boolean = false,
     navigateUp: () -> Unit = {},
     onMainScreen: Boolean = false,
+    openDrawer: () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -75,7 +76,7 @@ fun ActionToolbar(
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
                 }
             } else if (onMainScreen) {
-                IconButton(onClick = navigateUp) {
+                IconButton(onClick = openDrawer) {
                     Icon(imageVector = Icons.Default.Menu, contentDescription = null)
                 }
             }

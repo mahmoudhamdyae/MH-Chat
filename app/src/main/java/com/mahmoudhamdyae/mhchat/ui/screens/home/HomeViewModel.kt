@@ -1,6 +1,7 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.home
 
 import com.mahmoudhamdyae.mhchat.data.services.PreferencesRepository
+import com.mahmoudhamdyae.mhchat.domain.models.Message
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
@@ -14,21 +15,23 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val accountService: AccountService,
-    private val databaseService: UsersDatabaseService,
+    private val usersDatabaseService: UsersDatabaseService,
     private val chatDatabaseService: ChatDatabaseService,
     preferencesRepository: PreferencesRepository,
     logService: LogService
 ): ChatViewModel(logService) {
 
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState>
-        get() = _uiState
+    private val _users = MutableStateFlow<List<User>>(emptyList())
+    val users = _users.asStateFlow()
+    private val _lastMessages = MutableStateFlow<List<Message>>(emptyList())
+    val lastMessages = _lastMessages.asStateFlow()
 
     private val isFirstTime: Flow<Boolean> =
         preferencesRepository.isFirstTime
@@ -53,15 +56,21 @@ class HomeViewModel @Inject constructor(
 
     private fun getChats() {
         launchCatching {
-            databaseService.getCurrentUser().collect {
-                it?.chats?.forEach { userChat ->
-                    // Get Users
-                    databaseService.getUser(userChat.toUserId).collect { user ->
-                        _uiState.value.users?.add(user)
-                    }
-                    // Get Chats
-                    chatDatabaseService.getLastMessage(userChat.chatId).collect { message ->
-                        _uiState.value.lastMessages?.add(message)
+            usersDatabaseService.userChats.collect { userChats ->
+                userChats?.forEach { userChat ->
+                    if (userChat != null) {
+//                        _users.update { it + User("id1", "email1", userChat.toUserId) }
+//                        _lastMessages.update { it + Message(userChat.chatId) }
+                        // Get Users
+                        usersDatabaseService.getUser(userChat.toUserId).collect { user ->
+//                            if (user != null) _users.update { it + user }
+                            _users.update { it + User("id1", "email1", "username1") }
+                            // Get Last Messages
+                            chatDatabaseService.lastMessage(userChat.chatId).collect { message ->
+//                            if (message != null) _lastMessages.update { it + message }
+                                _lastMessages.update { it + Message("body1") }
+                            }
+                        }
                     }
                 }
             }
