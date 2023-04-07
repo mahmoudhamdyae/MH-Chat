@@ -30,7 +30,8 @@ class HomeViewModel @Inject constructor(
 
     private val _users = MutableStateFlow<List<User>>(emptyList())
     val users = _users.asStateFlow()
-    private val _lastMessages = MutableStateFlow<List<Message>>(emptyList())
+
+    private val _lastMessages = MutableStateFlow<List<Message?>>(emptyList())
     val lastMessages = _lastMessages.asStateFlow()
 
     private val isFirstTime: Flow<Boolean> =
@@ -59,16 +60,17 @@ class HomeViewModel @Inject constructor(
             usersDatabaseService.userChats.collect { userChats ->
                 userChats?.forEach { userChat ->
                     if (userChat != null) {
-//                        _users.update { it + User("id1", "email1", userChat.toUserId) }
-//                        _lastMessages.update { it + Message(userChat.chatId) }
                         // Get Users
                         usersDatabaseService.getUser(userChat.toUserId).collect { user ->
-//                            if (user != null) _users.update { it + user }
-                            _users.update { it + User("id1", "email1", "username1") }
+                            if (user != null) _users.update {
+                                if (!it.contains(user)) { it + user } else it
+                            }
+
                             // Get Last Messages
                             chatDatabaseService.lastMessage(userChat.chatId).collect { message ->
-//                            if (message != null) _lastMessages.update { it + message }
-                                _lastMessages.update { it + Message("body1") }
+                            _lastMessages.update {
+                                if (!it.contains(message)) { it + message } else it
+                            }
                             }
                         }
                     }
@@ -85,6 +87,13 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onItemClick(user: User, navigateTo: (String) -> Unit) {
-        navigateTo("${MessagesDestination.route}/${user.userId}")
+        launchCatching {
+            usersDatabaseService.userChats.collect { userChats ->
+                val chatId = userChats?.first {
+                    it?.toUserId == user.userId
+                }?.chatId
+                navigateTo("${MessagesDestination.route}/${user.userId}/${chatId}")
+            }
+        }
     }
 }
