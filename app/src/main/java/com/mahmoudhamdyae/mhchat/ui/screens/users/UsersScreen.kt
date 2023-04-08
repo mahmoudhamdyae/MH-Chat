@@ -114,10 +114,6 @@ fun UserListItem(
 ) {
     Card(
         elevation = CardDefaults.cardElevation(2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        ),
         modifier = modifier,
         onClick = { onItemClick(user, openScreen) },
     ) {

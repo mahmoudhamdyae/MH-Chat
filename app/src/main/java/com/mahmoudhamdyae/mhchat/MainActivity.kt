@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
             MHChatTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.surface
                 ) {
                     ChatApp()
                 }
