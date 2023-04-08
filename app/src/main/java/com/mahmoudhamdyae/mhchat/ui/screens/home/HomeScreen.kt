@@ -167,7 +167,9 @@ fun ChatList(
         exit = fadeOut(),
     ) {
         LazyColumn(modifier = modifier) {
-            itemsIndexed(list) { index, list ->
+            itemsIndexed(list, key = { _, list ->
+                list.second!!.messageId
+            }) { index, list ->
                 ChatListItem(
                     onItemClick = onItemClick,
                     openScreen = openScreen,

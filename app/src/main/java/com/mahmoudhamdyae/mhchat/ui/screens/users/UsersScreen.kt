@@ -79,7 +79,9 @@ fun UsersList(
         exit = fadeOut(),
     ) {
         LazyColumn(modifier = modifier) {
-            itemsIndexed(users) { index, user ->
+            itemsIndexed(users, key = { _, user ->
+                user.userId
+            }) { index, user ->
                 UserListItem(
                     openScreen = openScreen,
                     onItemClick = onItemClick,
