@@ -20,7 +20,9 @@ open class ChatViewModel @Inject constructor(
         viewModelScope.launch(
             CoroutineExceptionHandler { _, throwable ->
                 if (snackBar) {
-                    SnackBarManager.showMessage(throwable.toSnackBarMessage())
+                    viewModelScope.launch {
+                        SnackBarManager.showMessage(throwable.toSnackBarMessage())
+                    }
                 }
                 logService.logNonFatalCrash(throwable)
             },

@@ -3,6 +3,7 @@ package com.mahmoudhamdyae.mhchat.ui.screens.home
 import com.mahmoudhamdyae.mhchat.data.services.PreferencesRepository
 import com.mahmoudhamdyae.mhchat.domain.models.Message
 import com.mahmoudhamdyae.mhchat.domain.models.User
+import com.mahmoudhamdyae.mhchat.domain.models.UserChat
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
@@ -60,21 +61,27 @@ class HomeViewModel @Inject constructor(
             usersDatabaseService.userChats.collect { userChats ->
                 userChats?.forEach { userChat ->
                     if (userChat != null) {
-                        // Get Users
-                        usersDatabaseService.getUser(userChat.toUserId).collect { user ->
-                            if (user != null) _users.update {
-                                if (!it.contains(user)) { it + user } else it
-                            }
-
-                            // Get Last Messages
-                            chatDatabaseService.lastMessage(userChat.chatId).collect { message ->
-                            _lastMessages.update {
-                                if (!it.contains(message)) { it + message } else it
-                            }
-                            }
-                        }
+                        getUser(userChat)
                     }
                 }
+            }
+        }
+    }
+
+    private suspend fun getUser(userChat: UserChat) {
+        usersDatabaseService.getUser(userChat.toUserId).collect { user ->
+            if (user != null) _users.update {
+                if (!it.contains(user)) { it + user } else it
+            }
+            getLastMessages(userChat.chatId)
+        }
+    }
+
+    private suspend fun getLastMessages(chatId: String) {
+        // Get Last Messages
+        chatDatabaseService.lastMessage(chatId).collect { message ->
+            _lastMessages.update {
+                if (!it.contains(message)) { it + message } else it
             }
         }
     }

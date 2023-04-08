@@ -52,8 +52,8 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onSignUpClick(navigate: (String) -> Unit) {
-        if (validateAllFields()) {
-            launchCatching {
+        launchCatching {
+            if (validateAllFields()) {
                 accountService.linkAccount(email, password)
                 databaseService.saveUser(
                     User(
@@ -67,14 +67,14 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun validateAllFields(): Boolean {
+    private suspend fun validateAllFields(): Boolean {
         return validateUserName()
                 && validateEmail()
                 && validatePassword()
                 && validateRepeatPassword()
     }
 
-    private fun validateUserName(): Boolean {
+    private suspend fun validateUserName(): Boolean {
         return if (userName.isValidUserName()) {
             true
         } else {
@@ -83,7 +83,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun validateEmail(): Boolean {
+    private suspend fun validateEmail(): Boolean {
         return if (email.isValidEmail()) {
             true
         } else {
@@ -92,7 +92,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun validatePassword(): Boolean {
+    private suspend fun validatePassword(): Boolean {
         return if (password.isValidPassword()) {
             true
         } else {
@@ -101,7 +101,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun validateRepeatPassword(): Boolean {
+    private suspend fun validateRepeatPassword(): Boolean {
         return if (password.passwordMatches(uiState.value.repeatPassword)) {
             true
         } else {

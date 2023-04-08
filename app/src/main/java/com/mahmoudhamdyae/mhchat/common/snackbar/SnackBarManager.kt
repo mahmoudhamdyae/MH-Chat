@@ -1,20 +1,20 @@
 package com.mahmoudhamdyae.mhchat.common.snackbar
 
 import androidx.annotation.StringRes
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 object SnackBarManager {
-    private val messages: MutableStateFlow<SnackBarMessage?> = MutableStateFlow(null)
-    val snackBarMessages: StateFlow<SnackBarMessage?>
-        get() = messages.asStateFlow()
+    private val messages: MutableSharedFlow<SnackBarMessage?> = MutableSharedFlow()
+    val snackBarMessages: SharedFlow<SnackBarMessage?>
+        get() = messages.asSharedFlow()
 
-    fun showMessage(@StringRes message: Int) {
-        messages.value = SnackBarMessage.ResourceSnackBar(message)
+    suspend fun showMessage(@StringRes message: Int) {
+        messages.emit(SnackBarMessage.ResourceSnackBar(message))
     }
 
-    fun showMessage(message: SnackBarMessage) {
-        messages.value = message
+    suspend fun showMessage(message: SnackBarMessage) {
+        messages.emit(message)
     }
 }

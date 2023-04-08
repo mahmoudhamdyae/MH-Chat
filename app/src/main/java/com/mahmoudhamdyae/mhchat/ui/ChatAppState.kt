@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 @Stable
 class ChatAppState(
-    val snackBarHostState: SnackbarHostState,
+    private val snackBarHostState: SnackbarHostState,
     val navController: NavHostController,
     private val snackBarManager: SnackBarManager,
     private val resources: Resources,

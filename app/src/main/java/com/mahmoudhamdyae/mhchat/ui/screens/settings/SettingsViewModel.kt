@@ -45,7 +45,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private fun validatePassword(password: String): Boolean {
+    private suspend fun validatePassword(password: String): Boolean {
         return if (password.isBlank()) {
             SnackBarManager.showMessage(R.string.empty_password_error)
             false

@@ -23,8 +23,8 @@ class MessagesViewModel @AssistedInject constructor(
     var chat: Flow<Chat?> = chatDatabaseService.chat(chatId)
 
     fun onMessageSend(messageBody: String) {
-        if (validateMessageBody(messageBody)) {
-            launchCatching {
+        launchCatching {
+            if (validateMessageBody(messageBody)) {
                 chatDatabaseService.updateChat(
                     chatId = chatId,
                     toUserId = toUserId,
@@ -34,7 +34,7 @@ class MessagesViewModel @AssistedInject constructor(
         }
     }
 
-    private fun validateMessageBody(messageBody: String): Boolean {
+    private suspend fun validateMessageBody(messageBody: String): Boolean {
         return if (messageBody.isNotEmpty()) {
             true
         } else {
