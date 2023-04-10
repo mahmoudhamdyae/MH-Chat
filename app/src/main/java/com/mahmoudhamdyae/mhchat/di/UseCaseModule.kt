@@ -31,8 +31,10 @@ object UseCaseModule {
         LogInUseCase(accountService)
 
     @Provides
-    fun provideSignUpUseCase(accountService: AccountService, usersDatabaseService: UsersDatabaseService) =
-        SignUpUseCase(accountService, usersDatabaseService)
+    fun provideSignUpUseCase(
+        accountService: AccountService,
+        usersDatabaseService: UsersDatabaseService,
+    ) = SignUpUseCase(accountService, usersDatabaseService)
 
     @Provides
     fun provideForgotPasswordUseCase(accountService: AccountService) =
@@ -43,14 +45,25 @@ object UseCaseModule {
         SignOutUseCase(accountService)
 
     @Provides
-    fun provideUpdateProfileUseCase(accountService: AccountService, usersDatabaseService: UsersDatabaseService, storageService: StorageService) =
-        UpdateProfileUseCase(accountService, usersDatabaseService, storageService)
+    fun provideUpdateProfileUseCase(
+        accountService: AccountService,
+        usersDatabaseService: UsersDatabaseService,
+        storageService: StorageService,
+    ) = UpdateProfileUseCase(accountService, usersDatabaseService, storageService)
 
     @Provides
     fun provideGetMessagesUseCase(chatDatabaseService: ChatDatabaseService) =
         GetMessagesUseCase(chatDatabaseService)
 
     @Provides
-    fun provideGetUsersUseCase(accountService: AccountService, usersDatabaseService: UsersDatabaseService) =
-        GetUsersUseCase(accountService, usersDatabaseService)
+    fun provideGetUsersUseCase(
+        accountService: AccountService,
+        usersDatabaseService: UsersDatabaseService,
+    ) = GetUsersUseCase(accountService, usersDatabaseService)
+
+    @Provides
+    fun provideGetChatsUseCase(
+        usersDatabaseService: UsersDatabaseService,
+        chatDatabaseService: ChatDatabaseService
+    ) = GetChatsUseCase(usersDatabaseService, chatDatabaseService)
 }

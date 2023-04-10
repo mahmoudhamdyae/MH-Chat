@@ -68,11 +68,9 @@ fun HomeScreen(
                 }
             }
         }) {
-        val users by viewModel.users.collectAsStateWithLifecycle()
-        val lastMessages by viewModel.lastMessages.collectAsStateWithLifecycle()
+        val list by viewModel.uiState.collectAsStateWithLifecycle()
         HomeScreenContent(
-            users = users,
-            lastMessages = lastMessages,
+            list = list,
             onItemClick = viewModel::onItemClick,
             onSignOut = viewModel::onSignOut,
             openScreen = openScreen,
@@ -84,8 +82,7 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(
-    users: List<User>,
-    lastMessages: List<Message?>,
+    list: List<Pair<User?, Message?>>,
     onItemClick: (User, (String) -> Unit) -> Unit,
     onSignOut: ((String) -> Unit) -> Unit,
     openScreen: (String) -> Unit,
@@ -119,12 +116,11 @@ fun HomeScreenContent(
         },
     )
     { contentPadding ->
-        if (users.isEmpty()) {
+        if (list.isEmpty()) {
             EmptyScreen(modifier = modifier.padding(contentPadding))
         } else {
             ChatList(
-                users = users,
-                messages = lastMessages,
+                list = list,
                 openScreen = openScreen,
                 onItemClick = onItemClick,
                 modifier = Modifier.padding(contentPadding)
@@ -151,13 +147,11 @@ fun HomeScreenContent(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ChatList(
-    users: List<User?>,
-    messages: List<Message?>,
+    list: List<Pair<User?, Message?>>,
     openScreen: (String) -> Unit,
     modifier: Modifier = Modifier,
     onItemClick: (User, (String) -> Unit) -> Unit,
 ) {
-    val list = users.zip(messages)
     val visibleState = remember {
         MutableTransitionState(false).apply {
             // Start the animation immediately.
@@ -263,7 +257,8 @@ fun ChatListPreview() {
         Message(body = "Hello"),
         Message(body = "Hello2")
     )
-    ChatList(users = fakeUsers, messages = fakeMessages, openScreen = {}, onItemClick = { _, _ ->})
+    val fakeList = listOf<Pair<User?, Message?>>(Pair(fakeUsers[0], fakeMessages[0]), Pair(fakeUsers[1], fakeMessages[1]))
+    ChatList(list = fakeList, openScreen = {}, onItemClick = { _, _ ->})
 }
 
 @Preview
@@ -277,9 +272,9 @@ fun HomeScreenContentPreview() {
         Message(body = "Hello"),
         Message(body = "Hello2")
     )
+    val fakeList = listOf<Pair<User?, Message?>>(Pair(fakeUsers[0], fakeMessages[0]), Pair(fakeUsers[1], fakeMessages[1]))
     HomeScreenContent(
-        users = fakeUsers,
-        lastMessages = fakeMessages,
+        list = fakeList,
         onItemClick = { _, _ ->},
         onSignOut = {},
         openScreen = {},
