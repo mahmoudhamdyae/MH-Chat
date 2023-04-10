@@ -8,5 +8,6 @@ class LogInUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(email: String, password: String) {
+        accountService.authenticate(email, password)
     }
 }

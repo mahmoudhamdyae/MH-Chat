@@ -1,6 +1,7 @@
 package com.mahmoudhamdyae.mhchat.di
 
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
+import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.usecases.*
 import dagger.Module
 import dagger.Provides
@@ -28,8 +29,8 @@ object UseCaseModule {
         LogInUseCase(accountService)
 
     @Provides
-    fun provideSignUpUseCase(accountService: AccountService): SignUpUseCase =
-        SignUpUseCase(accountService)
+    fun provideSignUpUseCase(accountService: AccountService, usersDatabaseService: UsersDatabaseService): SignUpUseCase =
+        SignUpUseCase(accountService, usersDatabaseService)
 
     @Provides
     fun provideForgotPasswordUseCase(accountService: AccountService): ForgotPasswordUseCase =

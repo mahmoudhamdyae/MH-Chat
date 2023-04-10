@@ -5,15 +5,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.services.StorageService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
-import com.mahmoudhamdyae.mhchat.domain.usecases.ValidateEmail
-import com.mahmoudhamdyae.mhchat.domain.usecases.ValidatePassword
-import com.mahmoudhamdyae.mhchat.domain.usecases.ValidateRepeatedPassword
-import com.mahmoudhamdyae.mhchat.domain.usecases.ValidateUserName
+import com.mahmoudhamdyae.mhchat.domain.usecases.*
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.AuthFormEvent
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.AuthFormState
@@ -33,6 +29,7 @@ class SignUpViewModel @Inject constructor(
     private val accountService: AccountService,
     private val databaseService: UsersDatabaseService,
     private val storageService: StorageService,
+    private val signUpUseCase: SignUpUseCase,
     logService: LogService
 ): ChatViewModel(logService) {
 
@@ -95,14 +92,7 @@ class SignUpViewModel @Inject constructor(
 
     fun onSignUpClick(navigate: (String) -> Unit) {
         launchCatching {
-            accountService.linkAccount(state.email, state.password)
-            databaseService.saveUser(
-                User(
-                    userId = accountService.currentUserId,
-                    email = state.email,
-                    userName = state.userName
-                )
-            )
+            signUpUseCase(state.userName, state.email, state.password)
             navigate(ProfileImageDestination.route)
         }
     }
