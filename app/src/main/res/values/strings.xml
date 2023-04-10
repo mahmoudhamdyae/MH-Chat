@@ -66,6 +66,7 @@
 
     <!-- Messages -->
     <string name="message_empty">Message cannot be empty.</string>
+    <string name="message_text_field_label">Message</string>
 
     <!-- Content Descriptions -->
     <string name="email_content_description">Email</string>

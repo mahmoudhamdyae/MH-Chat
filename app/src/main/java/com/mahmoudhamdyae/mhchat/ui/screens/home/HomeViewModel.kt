@@ -99,7 +99,7 @@ class HomeViewModel @Inject constructor(
                 val chatId = userChats?.first {
                     it?.toUserId == user.userId
                 }?.chatId
-                navigateTo("${MessagesDestination.route}/${user.userId}/${chatId}")
+                navigateTo("${MessagesDestination.route}/${user.userId}/${chatId}/${user.imageUrl}/${user.userName}")
             }
         }
     }

@@ -76,8 +76,12 @@ fun NavGraphBuilder.chatGraph(appState: ChatAppState) {
     ) { navBackStack ->
         val toUserId = navBackStack.arguments?.getString(MessagesDestination.toUserIdArg)!!
         val chatId = navBackStack.arguments?.getString(MessagesDestination.chatIdArg)!!
+        val imageProfileId = navBackStack.arguments?.getString(MessagesDestination.imageProfileArg)
+        val userNameId = navBackStack.arguments?.getString(MessagesDestination.userNameArg)!!
         MessagesScreen(
             navigateUp = navigateUp,
+            imageProfile = imageProfileId,
+            userName = userNameId,
             viewModel = messagesViewModel(
                 chatId = chatId,//"fde18e5a-bf96-4932-b050-f5aa0671133d",
                 toUserId = toUserId,

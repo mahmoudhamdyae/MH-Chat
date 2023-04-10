@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,19 +37,36 @@ fun UsersScreen(
 ) {
     val users = viewModel.users.collectAsStateWithLifecycle(initialValue = emptyList())
 
+    UsersScreenContent(
+        navigateUp = navigateUp,
+        users = users.value,
+        openScreen = openScreen,
+        onItemClick = viewModel::onItemClick,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun UsersScreenContent(
+    navigateUp: () -> Unit,
+    users: List<User>,
+    openScreen: (String) -> Unit,
+    onItemClick: (User, (String) -> Unit) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier = modifier) {
         BasicToolBar(
             title = UsersDestination.titleRes,
             canNavigateUp = true,
             navigateUp = navigateUp
         )
-        if (users.value.isEmpty()) {
+        if (users.isEmpty()) {
             EmptyScreen()
         } else {
             UsersList(
                 openScreen = openScreen,
-                onItemClick = viewModel::onItemClick,
-                users = users.value,
+                onItemClick = onItemClick,
+                users = users,
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -138,4 +156,31 @@ fun UserListItem(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun UserListItem() {
+    val fakeUser = User(userName = "Mahmoud")
+    UserListItem(openScreen = {}, onItemClick = { _, _ -> }, user = fakeUser)
+}
+
+@Preview
+@Composable
+fun UsersListPreview() {
+    val fakeUsers = listOf(
+        User(userName = "Mahmoud"),
+        User(userName = "Ahmed")
+    )
+    UsersList(openScreen = {}, onItemClick = { _, _ -> }, users = fakeUsers)
+}
+
+@Preview
+@Composable
+fun UsersScreenContentPreview() {
+    val fakeUsers = listOf(
+        User(userName = "Mahmoud"),
+        User(userName = "Ahmed")
+    )
+    UsersScreenContent(navigateUp = {}, users = fakeUsers, openScreen = {}, onItemClick = { _, _ ->})
 }

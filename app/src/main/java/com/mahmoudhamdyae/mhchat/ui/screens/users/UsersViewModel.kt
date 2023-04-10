@@ -30,7 +30,7 @@ class UsersViewModel @Inject constructor(
 
     fun onItemClick(user: User, navigateTo: (String) -> Unit) {
         getChatId(user) { chatId ->
-            navigateTo("${MessagesDestination.route}/${user.userId}/${chatId}")
+            navigateTo("${MessagesDestination.route}/${user.userId}/${chatId}/${user.imageUrl}/${user.userName}")
         }
     }
 

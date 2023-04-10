@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -67,8 +68,13 @@ fun HomeScreen(
                 }
             }
         }) {
+        val users by viewModel.users.collectAsStateWithLifecycle()
+        val lastMessages by viewModel.lastMessages.collectAsStateWithLifecycle()
         HomeScreenContent(
-            viewModel = viewModel,
+            users = users,
+            lastMessages = lastMessages,
+            onItemClick = viewModel::onItemClick,
+            onSignOut = viewModel::onSignOut,
             openScreen = openScreen,
             openDrawer = { scope.launch { drawerState.open() } },
             modifier = modifier
@@ -78,13 +84,14 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(
-    viewModel: HomeViewModel,
+    users: List<User>,
+    lastMessages: List<Message?>,
+    onItemClick: (User, (String) -> Unit) -> Unit,
+    onSignOut: ((String) -> Unit) -> Unit,
     openScreen: (String) -> Unit,
     openDrawer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val users by viewModel.users.collectAsStateWithLifecycle()
-    val lastMessages by viewModel.lastMessages.collectAsStateWithLifecycle()
     var showWarningDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -119,7 +126,7 @@ fun HomeScreenContent(
                 users = users,
                 messages = lastMessages,
                 openScreen = openScreen,
-                onItemClick = viewModel::onItemClick,
+                onItemClick = onItemClick,
                 modifier = Modifier.padding(contentPadding)
             )
         }
@@ -132,7 +139,7 @@ fun HomeScreenContent(
             dismissButton = { DialogCancelButton(R.string.cancel) { showWarningDialog = false } },
             confirmButton = {
                 DialogConfirmButton(R.string.sign_out_confirm) {
-                    viewModel.onSignOut(openScreen)
+                    onSignOut(openScreen)
                     showWarningDialog = false
                 }
             },
@@ -235,4 +242,46 @@ fun ChatListItem(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun ChatListItemPreview() {
+    val fakeUser = User(userName = "Mahmoud")
+    val fakeMessage = Message(body = "Hello")
+    ChatListItem(user = fakeUser, message = fakeMessage, openScreen = {}, onItemClick = { _, _ -> })
+}
+
+@Preview
+@Composable
+fun ChatListPreview() {
+    val fakeUsers = listOf(
+        User(userName = "Mahmoud"),
+        User(userName = "Ahmed")
+    )
+    val fakeMessages = listOf(
+        Message(body = "Hello"),
+        Message(body = "Hello2")
+    )
+    ChatList(users = fakeUsers, messages = fakeMessages, openScreen = {}, onItemClick = { _, _ ->})
+}
+
+@Preview
+@Composable
+fun HomeScreenContentPreview() {
+    val fakeUsers = listOf(
+        User(userName = "Mahmoud"),
+        User(userName = "Ahmed")
+    )
+    val fakeMessages = listOf(
+        Message(body = "Hello"),
+        Message(body = "Hello2")
+    )
+    HomeScreenContent(
+        users = fakeUsers,
+        lastMessages = fakeMessages,
+        onItemClick = { _, _ ->},
+        onSignOut = {},
+        openScreen = {},
+        openDrawer = {})
 }
