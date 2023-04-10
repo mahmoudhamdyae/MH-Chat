@@ -20,7 +20,7 @@ fun String.passwordErrorMessage(): Int? {
         R.string.empty_password_error
     } else if (this.length < MIN_PASS_LENGTH) {
         R.string.password_length_error
-    } else if (Pattern.compile(PASS_PATTERN).matcher(this).matches()) {
+    } else if (!Pattern.compile(PASS_PATTERN).matcher(this).matches()) {
         R.string.password_error
     } else {
         null
