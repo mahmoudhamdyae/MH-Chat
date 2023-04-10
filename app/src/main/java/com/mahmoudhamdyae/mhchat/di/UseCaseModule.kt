@@ -1,9 +1,7 @@
 package com.mahmoudhamdyae.mhchat.di
 
-import com.mahmoudhamdyae.mhchat.domain.usecases.ValidateEmail
-import com.mahmoudhamdyae.mhchat.domain.usecases.ValidatePassword
-import com.mahmoudhamdyae.mhchat.domain.usecases.ValidateRepeatedPassword
-import com.mahmoudhamdyae.mhchat.domain.usecases.ValidateUserName
+import com.mahmoudhamdyae.mhchat.domain.services.AccountService
+import com.mahmoudhamdyae.mhchat.domain.usecases.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,4 +22,20 @@ object UseCaseModule {
 
     @Provides
     fun provideRepeatedPasswordUseCase(): ValidateRepeatedPassword = ValidateRepeatedPassword()
+
+    @Provides
+    fun provideLogInUseCase(accountService: AccountService): LogInUseCase =
+        LogInUseCase(accountService)
+
+    @Provides
+    fun provideSignUpUseCase(accountService: AccountService): SignUpUseCase =
+        SignUpUseCase(accountService)
+
+    @Provides
+    fun provideForgotPasswordUseCase(accountService: AccountService): ForgotPasswordUseCase =
+        ForgotPasswordUseCase(accountService)
+
+    @Provides
+    fun provideSignOutUseCase(accountService: AccountService): SignOutUseCase =
+        SignOutUseCase(accountService)
 }

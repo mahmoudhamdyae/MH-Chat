@@ -8,6 +8,7 @@ import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
+import com.mahmoudhamdyae.mhchat.domain.usecases.ForgotPasswordUseCase
 import com.mahmoudhamdyae.mhchat.domain.usecases.ValidateEmail
 import com.mahmoudhamdyae.mhchat.domain.usecases.ValidatePassword
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
@@ -26,6 +27,7 @@ class LogInViewModel @Inject constructor(
     private val validateEmail: ValidateEmail,
     private val validatePassword: ValidatePassword,
     private val accountService: AccountService,
+    private val forgotPasswordUseCase: ForgotPasswordUseCase,
     logService: LogService
 ): ChatViewModel(logService) {
 
@@ -89,8 +91,8 @@ class LogInViewModel @Inject constructor(
             state = state.copy(emailError = emailResult.errorMessage)
             return
         }
-        viewModelScope.launch {
-            accountService.sendRecoveryEmail(state.email)
+        launchCatching {
+            forgotPasswordUseCase(state.email)
             SnackBarManager.showMessage(R.string.recovery_email_sent)
         }
     }
