@@ -32,7 +32,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.domain.models.OnBoardingItem
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
-import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.auth.login.LogInDestination
 import kotlinx.coroutines.launch
 
 object OnBoardingDestination: NavigationDestination {

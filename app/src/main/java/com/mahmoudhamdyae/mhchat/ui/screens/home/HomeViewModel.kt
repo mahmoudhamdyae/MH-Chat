@@ -9,7 +9,7 @@ import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
-import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.auth.login.LogInDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.onboarding.OnBoardingDestination
 import dagger.hilt.android.lifecycle.HiltViewModel

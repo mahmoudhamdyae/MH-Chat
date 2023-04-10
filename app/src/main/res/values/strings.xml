@@ -27,7 +27,8 @@
     <string name="password">Password</string>
     <string name="email_error">Please insert a valid email.</string>
     <string name="empty_password_error">Password cannot be empty.</string>
-    <string name="password_error">Your password should have at least six digits and include one digit, one lower case letter and one upper case letter.</string>
+    <string name="password_length_error">Your password should have at least six digits.</string>
+    <string name="password_error">Your password should include one digit, one lower case letter and one upper case letter.</string>
     <!-- Log In -->
     <string name="log_in_button">Sign in</string>
     <string name="log_in_with_google_button">Sign in with Google</string>

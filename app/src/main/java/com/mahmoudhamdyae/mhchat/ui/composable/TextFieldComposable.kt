@@ -7,10 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,13 +29,15 @@ fun UserNameField(
     value: String,
     onNewValue: (String) -> Unit,
     focusManager: FocusManager,
-    modifier: Modifier = Modifier
+    userNameError: Int?,
+    modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
         singleLine = true,
         modifier = modifier,
         value = value,
         onValueChange = { onNewValue(it) },
+        isError = userNameError != null,
         placeholder = { Text(stringResource(R.string.user_name)) },
         leadingIcon = {
             Icon(
@@ -54,6 +53,13 @@ fun UserNameField(
             onNext = { focusManager.moveFocus(FocusDirection.Down) }
         )
     )
+    if (userNameError != null) {
+        Text(
+            text = stringResource(id = userNameError),
+            color = MaterialTheme.colorScheme.error,
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
@@ -61,13 +67,15 @@ fun EmailField(
     value: String,
     onNewValue: (String) -> Unit,
     focusManager: FocusManager,
-    modifier: Modifier = Modifier
+    emailError: Int?,
+    modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
         singleLine = true,
         modifier = modifier,
         value = value,
         onValueChange = { onNewValue(it) },
+        isError = emailError != null,
         placeholder = { Text(stringResource(R.string.email)) },
         leadingIcon = {
             Icon(
@@ -83,6 +91,13 @@ fun EmailField(
             onNext = { focusManager.moveFocus(FocusDirection.Down) }
         )
     )
+    if (emailError != null) {
+        Text(
+            text = stringResource(id = emailError),
+            color = MaterialTheme.colorScheme.error,
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
@@ -90,9 +105,10 @@ fun PasswordField(
     value: String,
     onNewValue: (String) -> Unit,
     focusManager: FocusManager,
-    modifier: Modifier = Modifier
+    passwordError: Int?,
+    modifier: Modifier = Modifier,
 ) {
-    PasswordField(value, R.string.password, onNewValue, focusManager, modifier)
+    PasswordField(value, R.string.password, onNewValue, passwordError, focusManager, modifier)
 }
 
 @Composable
@@ -100,9 +116,10 @@ fun RepeatPasswordField(
     value: String,
     onNewValue: (String) -> Unit,
     focusManager: FocusManager,
-    modifier: Modifier = Modifier
+    repeatedPasswordError: Int?,
+    modifier: Modifier = Modifier,
 ) {
-    PasswordField(value, R.string.repeat_password, onNewValue, focusManager, modifier)
+    PasswordField(value, R.string.repeat_password, onNewValue, repeatedPasswordError, focusManager, modifier)
 }
 
 @Composable
@@ -110,8 +127,9 @@ private fun PasswordField(
     value: String,
     @StringRes placeholder: Int,
     onNewValue: (String) -> Unit,
+    passwordError: Int?,
     focusManager: FocusManager,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var isVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -126,6 +144,7 @@ private fun PasswordField(
         modifier = modifier,
         value = value,
         onValueChange = { onNewValue(it) },
+        isError = passwordError != null,
         placeholder = { Text(text = stringResource(placeholder)) },
         leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "Lock") },
         trailingIcon = {
@@ -142,4 +161,11 @@ private fun PasswordField(
         ),
         visualTransformation = visualTransformation
     )
+    if (passwordError != null) {
+        Text(
+            text = stringResource(id = passwordError),
+            color = MaterialTheme.colorScheme.error,
+            modifier = modifier
+        )
+    }
 }

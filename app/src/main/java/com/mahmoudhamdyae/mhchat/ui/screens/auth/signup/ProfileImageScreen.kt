@@ -1,4 +1,4 @@
-package com.mahmoudhamdyae.mhchat.ui.screens.signup
+package com.mahmoudhamdyae.mhchat.ui.screens.auth.signup
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult

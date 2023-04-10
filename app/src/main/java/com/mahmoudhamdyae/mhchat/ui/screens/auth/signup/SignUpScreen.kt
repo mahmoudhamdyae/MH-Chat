@@ -1,13 +1,14 @@
-package com.mahmoudhamdyae.mhchat.ui.screens.signup
+package com.mahmoudhamdyae.mhchat.ui.screens.auth.signup
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -21,7 +22,10 @@ import com.mahmoudhamdyae.mhchat.common.ext.fieldModifier
 import com.mahmoudhamdyae.mhchat.common.ext.textButton
 import com.mahmoudhamdyae.mhchat.ui.composable.*
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
-import com.mahmoudhamdyae.mhchat.ui.screens.login.LogInDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.auth.AuthFormEvent
+import com.mahmoudhamdyae.mhchat.ui.screens.auth.AuthFormState
+import com.mahmoudhamdyae.mhchat.ui.screens.auth.ValidationEvent
+import com.mahmoudhamdyae.mhchat.ui.screens.auth.login.LogInDestination
 
 object SignUpDestination: NavigationDestination {
     override val route: String = "sign_up"
@@ -36,7 +40,34 @@ fun SignUpScreen(
     viewModel: SignUpViewModel = hiltViewModel(),
 ) {
 
-    val uiState by viewModel.uiState
+    val state = viewModel.state
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = context) {
+        viewModel.validationEvents.collect { event ->
+            when (event) {
+                is ValidationEvent.Success -> {
+                    viewModel.onSignUpClick(openScreen)
+                }
+            }
+        }
+    }
+
+    SignUpScreenContent(
+        openAndPopUp = openAndPopUp,
+        state = state,
+        onEvent = viewModel::onEvent,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun SignUpScreenContent(
+    openAndPopUp: (String) -> Unit,
+    state: AuthFormState,
+    onEvent: (AuthFormEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val fieldModifier = Modifier.fieldModifier()
     val focusManager = LocalFocusManager.current
 
@@ -61,13 +92,38 @@ fun SignUpScreen(
                 openAndPopUp(LogInDestination.route)
             }
         }
-        UserNameField(uiState.userName, viewModel::onUserNameChange, focusManager, fieldModifier)
-        EmailField(uiState.email, viewModel::onEmailChange, focusManager, fieldModifier)
-        PasswordField(uiState.password, viewModel::onPasswordChange, focusManager, fieldModifier)
-        RepeatPasswordField(uiState.repeatPassword, viewModel::onRepeatPasswordChange, focusManager, fieldModifier)
+
+        UserNameField(
+            value = state.userName,
+            onNewValue = { onEvent(AuthFormEvent.UserNameChanged(it)) },
+            userNameError = state.userNameError,
+            focusManager = focusManager,
+            modifier = fieldModifier
+        )
+        EmailField(
+            value = state.email,
+            onNewValue = { onEvent(AuthFormEvent.EmailChanged(it)) },
+            emailError = state.emailError,
+            focusManager = focusManager,
+            modifier = fieldModifier
+        )
+        PasswordField(
+            value = state.password,
+            onNewValue = { onEvent(AuthFormEvent.PasswordChanged(it)) },
+            passwordError = state.passwordError,
+            focusManager = focusManager,
+            modifier = fieldModifier
+        )
+        RepeatPasswordField(
+            value = state.repeatedPassword,
+            onNewValue = { onEvent(AuthFormEvent.RepeatedPasswordChanged(it)) },
+            repeatedPasswordError = state.repeatedPasswordError,
+            focusManager = focusManager,
+            modifier = fieldModifier
+        )
 
         BasicButton(R.string.sign_up_button, Modifier.basicButton()) {
-            viewModel.onSignUpClick(openScreen)
+            onEvent(AuthFormEvent.Submit)
         }
     }
 }
