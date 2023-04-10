@@ -1,6 +1,8 @@
 package com.mahmoudhamdyae.mhchat.di
 
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
+import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
+import com.mahmoudhamdyae.mhchat.domain.services.StorageService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.usecases.*
 import dagger.Module
@@ -13,30 +15,42 @@ import dagger.hilt.components.SingletonComponent
 object UseCaseModule {
 
     @Provides
-    fun provideUserNameUseCase(): ValidateUserName = ValidateUserName()
+    fun provideUserNameUseCase() = ValidateUserName()
 
     @Provides
-    fun provideEmailUseCase(): ValidateEmail = ValidateEmail()
+    fun provideEmailUseCase() = ValidateEmail()
 
     @Provides
-    fun providePasswordUseCase(): ValidatePassword = ValidatePassword()
+    fun providePasswordUseCase() = ValidatePassword()
 
     @Provides
-    fun provideRepeatedPasswordUseCase(): ValidateRepeatedPassword = ValidateRepeatedPassword()
+    fun provideRepeatedPasswordUseCase() = ValidateRepeatedPassword()
 
     @Provides
-    fun provideLogInUseCase(accountService: AccountService): LogInUseCase =
+    fun provideLogInUseCase(accountService: AccountService) =
         LogInUseCase(accountService)
 
     @Provides
-    fun provideSignUpUseCase(accountService: AccountService, usersDatabaseService: UsersDatabaseService): SignUpUseCase =
+    fun provideSignUpUseCase(accountService: AccountService, usersDatabaseService: UsersDatabaseService) =
         SignUpUseCase(accountService, usersDatabaseService)
 
     @Provides
-    fun provideForgotPasswordUseCase(accountService: AccountService): ForgotPasswordUseCase =
+    fun provideForgotPasswordUseCase(accountService: AccountService) =
         ForgotPasswordUseCase(accountService)
 
     @Provides
-    fun provideSignOutUseCase(accountService: AccountService): SignOutUseCase =
+    fun provideSignOutUseCase(accountService: AccountService) =
         SignOutUseCase(accountService)
+
+    @Provides
+    fun provideUpdateProfileUseCase(accountService: AccountService, usersDatabaseService: UsersDatabaseService, storageService: StorageService) =
+        UpdateProfileUseCase(accountService, usersDatabaseService, storageService)
+
+    @Provides
+    fun provideGetMessagesUseCase(chatDatabaseService: ChatDatabaseService) =
+        GetMessagesUseCase(chatDatabaseService)
+
+    @Provides
+    fun provideGetUsersUseCase(accountService: AccountService, usersDatabaseService: UsersDatabaseService) =
+        GetUsersUseCase(accountService, usersDatabaseService)
 }

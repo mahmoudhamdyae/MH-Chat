@@ -40,13 +40,11 @@ import java.util.*
 object MessagesDestination: NavigationDestination {
     override val route: String = "messages"
     override val titleRes: Int = R.string.messages_screen_title
-    const val toUserIdArg = "userId"
     const val chatIdArg = "chatId"
     const val imageProfileArg = "imageProfileId"
     const val userNameArg = "userNameId"
-    val routeWithArgs = "$route/{$toUserIdArg}/{$chatIdArg}/{$imageProfileArg}/{$userNameArg}"
+    val routeWithArgs = "$route/{$chatIdArg}/{$imageProfileArg}/{$userNameArg}"
     val arguments = listOf(
-        navArgument(toUserIdArg) { type = NavType.StringType },
         navArgument(chatIdArg) { type = NavType.StringType},
         navArgument(imageProfileArg) { type = NavType.StringType },
         navArgument(userNameArg) { type = NavType.StringType }

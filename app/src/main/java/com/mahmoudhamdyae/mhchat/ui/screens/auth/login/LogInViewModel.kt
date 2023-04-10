@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
-import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.usecases.ForgotPasswordUseCase
 import com.mahmoudhamdyae.mhchat.domain.usecases.LogInUseCase
@@ -27,7 +26,6 @@ import javax.inject.Inject
 class LogInViewModel @Inject constructor(
     private val validateEmail: ValidateEmail,
     private val validatePassword: ValidatePassword,
-    private val accountService: AccountService,
     private val logInUseCase: LogInUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
     logService: LogService

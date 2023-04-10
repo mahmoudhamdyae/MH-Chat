@@ -10,6 +10,6 @@ interface ChatDatabaseService {
     val lastMessage: (String) -> Flow<Message?>
 
     suspend fun createChat(toUserId: String, chatId: String)
-    suspend fun updateChat(chatId: String, toUserId: String, messageBody: String)
+    suspend fun updateChat(chatId: String, messageBody: String)
     suspend fun delChat(chatId: String)
 }

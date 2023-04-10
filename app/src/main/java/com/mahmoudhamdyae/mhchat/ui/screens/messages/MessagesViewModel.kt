@@ -2,11 +2,10 @@ package com.mahmoudhamdyae.mhchat.ui.screens.messages
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.mahmoudhamdyae.mhchat.R
-import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
 import com.mahmoudhamdyae.mhchat.domain.models.Chat
-import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
+import com.mahmoudhamdyae.mhchat.domain.usecases.GetMessagesUseCase
+import com.mahmoudhamdyae.mhchat.domain.usecases.SendMessageUseCase
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -14,32 +13,17 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.Flow
 
 class MessagesViewModel @AssistedInject constructor(
-    private val chatDatabaseService: ChatDatabaseService,
+    getMessagesUseCase: GetMessagesUseCase,
+    private val sendMessageUseCase: SendMessageUseCase,
     @Assisted("chatId") private val chatId: String,
-    @Assisted("toUserId") private val toUserId: String,
     logService: LogService
 ): ChatViewModel(logService) {
 
-    var chat: Flow<Chat?> = chatDatabaseService.chat(chatId)
+    var chat: Flow<Chat?> = getMessagesUseCase(chatId)
 
     fun onMessageSend(messageBody: String) {
         launchCatching {
-            if (validateMessageBody(messageBody)) {
-                chatDatabaseService.updateChat(
-                    chatId = chatId,
-                    toUserId = toUserId,
-                    messageBody = messageBody
-                )
-            }
-        }
-    }
-
-    private suspend fun validateMessageBody(messageBody: String): Boolean {
-        return if (messageBody.isNotEmpty()) {
-            true
-        } else {
-            SnackBarManager.showMessage(R.string.message_empty)
-            false
+            sendMessageUseCase(chatId, messageBody)
         }
     }
 
@@ -47,7 +31,6 @@ class MessagesViewModel @AssistedInject constructor(
     interface Factory {
         fun create(
             @Assisted("chatId") chatId: String,
-            @Assisted("toUserId") toUserId: String,
         ): MessagesViewModel
     }
 
@@ -56,10 +39,9 @@ class MessagesViewModel @AssistedInject constructor(
         fun provideFactory(
             assistedFactory: Factory,
             chatId: String,
-            toUserId: String,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(chatId, toUserId) as T
+                return assistedFactory.create(chatId) as T
             }
         }
     }

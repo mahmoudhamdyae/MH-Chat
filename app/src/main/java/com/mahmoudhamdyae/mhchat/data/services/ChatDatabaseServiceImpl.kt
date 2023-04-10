@@ -43,7 +43,7 @@ class ChatDatabaseServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateChat(chatId: String, toUserId: String, messageBody: String) {
+    override suspend fun updateChat(chatId: String, messageBody: String) {
         val message = Message(
             body = messageBody,
             author = accountService.currentUserId,

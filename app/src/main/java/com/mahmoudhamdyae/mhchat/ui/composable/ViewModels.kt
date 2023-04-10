@@ -19,7 +19,6 @@ interface ViewModelFactoryProvider {
 @Composable
 fun messagesViewModel(
     chatId: String,
-    toUserId: String,
 ): MessagesViewModel {
     val factory = EntryPointAccessors.fromActivity(
         LocalContext.current as Activity,
@@ -27,6 +26,6 @@ fun messagesViewModel(
     ).messagesViewModelFactory()
 
     return viewModel(
-        factory = MessagesViewModel.provideFactory(factory, chatId, toUserId)
+        factory = MessagesViewModel.provideFactory(factory, chatId)
     )
 }

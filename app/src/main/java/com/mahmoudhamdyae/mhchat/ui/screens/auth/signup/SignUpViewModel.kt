@@ -5,10 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
-import com.mahmoudhamdyae.mhchat.domain.services.StorageService
-import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.usecases.*
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.AuthFormEvent
@@ -26,10 +23,8 @@ class SignUpViewModel @Inject constructor(
     private val validateEmail: ValidateEmail,
     private val validatePassword: ValidatePassword,
     private val validateRepeatedPassword: ValidateRepeatedPassword,
-    private val accountService: AccountService,
-    private val databaseService: UsersDatabaseService,
-    private val storageService: StorageService,
     private val signUpUseCase: SignUpUseCase,
+    private val updateProfileUseCase: UpdateProfileUseCase,
     logService: LogService
 ): ChatViewModel(logService) {
 
@@ -99,9 +94,7 @@ class SignUpViewModel @Inject constructor(
 
     fun saveProfileImage(imageUri: Uri) {
         launchCatching {
-            storageService.saveImage(imageUri)
-            databaseService.
-                updateProfileImage(storageService.getImage(accountService.currentUserId).toString())
+            updateProfileUseCase(imageUri)
         }
     }
 }

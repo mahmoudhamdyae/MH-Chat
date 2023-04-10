@@ -1,36 +1,29 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.users
 
 import com.mahmoudhamdyae.mhchat.domain.models.User
-import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
+import com.mahmoudhamdyae.mhchat.domain.usecases.GetUsersUseCase
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.map
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class UsersViewModel @Inject constructor(
-    accountService: AccountService,
     private val chatDatabaseService: ChatDatabaseService,
     private val usersDatabaseService: UsersDatabaseService,
+    getUsersUseCase: GetUsersUseCase,
     logService: LogService
 ): ChatViewModel(logService) {
 
-    private val currentUserId = accountService.currentUserId
-
-    val users = usersDatabaseService.users.map {
-        it.filter { user ->
-            user.userId != currentUserId
-        }
-    }
+    val users = getUsersUseCase()
 
     fun onItemClick(user: User, navigateTo: (String) -> Unit) {
         getChatId(user) { chatId ->
-            navigateTo("${MessagesDestination.route}/${user.userId}/${chatId}/${user.imageUrl}/${user.userName}")
+            navigateTo("${MessagesDestination.route}/${chatId}/${user.imageUrl}/${user.userName}")
         }
     }
 
