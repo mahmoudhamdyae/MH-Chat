@@ -6,8 +6,7 @@ import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
-import com.mahmoudhamdyae.mhchat.domain.usecases.GetChatsUseCase
-import com.mahmoudhamdyae.mhchat.domain.usecases.SignOutUseCase
+import com.mahmoudhamdyae.mhchat.domain.usecases.BaseUseCase
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.login.LogInDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
@@ -23,8 +22,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val accountService: AccountService,
     private val usersDatabaseService: UsersDatabaseService,
-    private val getChatsUseCase: GetChatsUseCase,
-    private val signOutUseCase: SignOutUseCase,
+    private val useCase: BaseUseCase,
     preferencesRepository: PreferencesRepository,
     logService: LogService
 ): ChatViewModel(logService) {
@@ -55,7 +53,7 @@ class HomeViewModel @Inject constructor(
 
     private fun getChats() {
         launchCatching {
-            getChatsUseCase {
+            useCase.getChatsUseCase {
                 _uiState.value = it
             }
         }
@@ -63,7 +61,7 @@ class HomeViewModel @Inject constructor(
 
     fun onSignOut(navigate: (String) -> Unit) {
         launchCatching {
-            signOutUseCase()
+            useCase.signOutUseCase()
             navigate(LogInDestination.route)
         }
     }

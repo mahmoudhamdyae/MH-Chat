@@ -3,7 +3,7 @@ package com.mahmoudhamdyae.mhchat.domain.usecases
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.common.ext.isValidEmail
 
-class ValidateEmail() {
+class ValidateEmail {
 
     operator fun invoke(email: String): ValidationResult {
         return if (email.isValidEmail()) {

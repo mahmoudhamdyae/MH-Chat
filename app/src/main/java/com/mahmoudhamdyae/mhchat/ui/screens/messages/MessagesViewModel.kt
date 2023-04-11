@@ -4,8 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.mahmoudhamdyae.mhchat.domain.models.Chat
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
-import com.mahmoudhamdyae.mhchat.domain.usecases.GetMessagesUseCase
-import com.mahmoudhamdyae.mhchat.domain.usecases.SendMessageUseCase
+import com.mahmoudhamdyae.mhchat.domain.usecases.BaseUseCase
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -13,17 +12,16 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.Flow
 
 class MessagesViewModel @AssistedInject constructor(
-    getMessagesUseCase: GetMessagesUseCase,
-    private val sendMessageUseCase: SendMessageUseCase,
+    private val useCase: BaseUseCase,
     @Assisted("chatId") private val chatId: String,
     logService: LogService
 ): ChatViewModel(logService) {
 
-    var chat: Flow<Chat?> = getMessagesUseCase(chatId)
+    var chat: Flow<Chat?> = useCase.getMessagesUseCase(chatId)
 
     fun onMessageSend(messageBody: String) {
         launchCatching {
-            sendMessageUseCase(chatId, messageBody)
+            useCase.sendMessageUseCase(chatId, messageBody)
         }
     }
 

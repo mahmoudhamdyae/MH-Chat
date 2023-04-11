@@ -1,9 +1,8 @@
 package com.mahmoudhamdyae.mhchat.domain.usecases
 
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
-import javax.inject.Inject
 
-class SignOutUseCase @Inject constructor(
+class SignOutUseCase (
     private val accountService: AccountService
 ) {
 

@@ -7,10 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
-import com.mahmoudhamdyae.mhchat.domain.usecases.ForgotPasswordUseCase
-import com.mahmoudhamdyae.mhchat.domain.usecases.LogInUseCase
-import com.mahmoudhamdyae.mhchat.domain.usecases.ValidateEmail
-import com.mahmoudhamdyae.mhchat.domain.usecases.ValidatePassword
+import com.mahmoudhamdyae.mhchat.domain.usecases.BaseUseCase
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.AuthFormEvent
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.AuthFormState
@@ -24,10 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LogInViewModel @Inject constructor(
-    private val validateEmail: ValidateEmail,
-    private val validatePassword: ValidatePassword,
-    private val logInUseCase: LogInUseCase,
-    private val forgotPasswordUseCase: ForgotPasswordUseCase,
+    private val useCase: BaseUseCase,
     logService: LogService
 ): ChatViewModel(logService) {
 
@@ -57,8 +51,8 @@ class LogInViewModel @Inject constructor(
     }
 
     private fun submitData() {
-        val emailResult = validateEmail(state.email)
-        val passwordResult = validatePassword(state.password, true)
+        val emailResult = useCase.validateEmail(state.email)
+        val passwordResult = useCase.validatePassword(state.password, true)
 
         val hasError = listOf(
             emailResult,
@@ -79,20 +73,20 @@ class LogInViewModel @Inject constructor(
 
     fun onSignInClick(navigate: (String) -> Unit) {
         launchCatching {
-            logInUseCase(state.email, state.password)
+            useCase.logInUseCase(state.email, state.password)
             navigate(HomeDestination.route)
         }
     }
 
     private fun onForgotPasswordClick() {
-        val emailResult = validateEmail(state.email)
+        val emailResult = useCase.validateEmail(state.email)
 
         if (!emailResult.successful) {
             state = state.copy(emailError = emailResult.errorMessage)
             return
         }
         launchCatching {
-            forgotPasswordUseCase(state.email)
+            useCase.forgotPasswordUseCase(state.email)
             SnackBarManager.showMessage(R.string.recovery_email_sent)
         }
     }

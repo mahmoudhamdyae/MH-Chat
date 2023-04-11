@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
-import com.mahmoudhamdyae.mhchat.domain.usecases.*
+import com.mahmoudhamdyae.mhchat.domain.usecases.BaseUseCase
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.AuthFormEvent
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.AuthFormState
@@ -19,12 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val validateUserName: ValidateUserName,
-    private val validateEmail: ValidateEmail,
-    private val validatePassword: ValidatePassword,
-    private val validateRepeatedPassword: ValidateRepeatedPassword,
-    private val signUpUseCase: SignUpUseCase,
-    private val updateProfileUseCase: UpdateProfileUseCase,
+    private val useCase: BaseUseCase,
     logService: LogService
 ): ChatViewModel(logService) {
 
@@ -57,10 +52,10 @@ class SignUpViewModel @Inject constructor(
     }
 
     private fun submitData() {
-        val userNameResult = validateUserName(state.userName)
-        val emailResult = validateEmail(state.email)
-        val passwordResult = validatePassword(state.password)
-        val repeatedPasswordResult = validateRepeatedPassword(
+        val userNameResult = useCase.validateUserName(state.userName)
+        val emailResult = useCase.validateEmail(state.email)
+        val passwordResult = useCase.validatePassword(state.password)
+        val repeatedPasswordResult = useCase.validateRepeatedPassword(
             state.password, state.repeatedPassword
         )
 
@@ -87,14 +82,14 @@ class SignUpViewModel @Inject constructor(
 
     fun onSignUpClick(navigate: (String) -> Unit) {
         launchCatching {
-            signUpUseCase(state.userName, state.email, state.password)
+            useCase.signUpUseCase(state.userName, state.email, state.password)
             navigate(ProfileImageDestination.route)
         }
     }
 
     fun saveProfileImage(imageUri: Uri) {
         launchCatching {
-            updateProfileUseCase(imageUri)
+            useCase.updateProfileUseCase(imageUri)
         }
     }
 }

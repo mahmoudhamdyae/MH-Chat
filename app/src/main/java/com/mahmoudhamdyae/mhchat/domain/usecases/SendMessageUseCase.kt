@@ -3,9 +3,8 @@ package com.mahmoudhamdyae.mhchat.domain.usecases
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
-import javax.inject.Inject
 
-class SendMessageUseCase @Inject constructor(
+class SendMessageUseCase (
     private val chatDatabaseService: ChatDatabaseService
 ) {
 

@@ -6,9 +6,8 @@ import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.login.LogInDestination
-import javax.inject.Inject
 
-class DeleteAccountUseCase @Inject constructor(
+class DeleteAccountUseCase (
     private val accountService: AccountService,
     private val usersDatabaseService: UsersDatabaseService,
     private val chatDatabaseService: ChatDatabaseService,

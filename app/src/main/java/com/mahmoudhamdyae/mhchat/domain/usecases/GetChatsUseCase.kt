@@ -4,9 +4,8 @@ import com.mahmoudhamdyae.mhchat.domain.models.Message
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
-import javax.inject.Inject
 
-class GetChatsUseCase @Inject constructor(
+class GetChatsUseCase (
     private val usersDatabaseService: UsersDatabaseService,
     private val chatDatabaseService: ChatDatabaseService,
 ) {

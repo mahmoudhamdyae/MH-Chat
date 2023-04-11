@@ -4,7 +4,7 @@ import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
-import com.mahmoudhamdyae.mhchat.domain.usecases.GetUsersUseCase
+import com.mahmoudhamdyae.mhchat.domain.usecases.BaseUseCase
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,11 +15,11 @@ import javax.inject.Inject
 class UsersViewModel @Inject constructor(
     private val chatDatabaseService: ChatDatabaseService,
     private val usersDatabaseService: UsersDatabaseService,
-    getUsersUseCase: GetUsersUseCase,
+    useCase: BaseUseCase,
     logService: LogService
 ): ChatViewModel(logService) {
 
-    val users = getUsersUseCase()
+    val users = useCase.getUsersUseCase()
 
     fun onItemClick(user: User, navigateTo: (String) -> Unit) {
         getChatId(user) { chatId ->

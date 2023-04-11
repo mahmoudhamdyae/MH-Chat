@@ -15,55 +15,27 @@ import dagger.hilt.components.SingletonComponent
 object UseCaseModule {
 
     @Provides
-    fun provideUserNameUseCase() = ValidateUserName()
-
-    @Provides
-    fun provideEmailUseCase() = ValidateEmail()
-
-    @Provides
-    fun providePasswordUseCase() = ValidatePassword()
-
-    @Provides
-    fun provideRepeatedPasswordUseCase() = ValidateRepeatedPassword()
-
-    @Provides
-    fun provideLogInUseCase(accountService: AccountService) =
-        LogInUseCase(accountService)
-
-    @Provides
-    fun provideSignUpUseCase(
+    fun provideUseCase(
         accountService: AccountService,
         usersDatabaseService: UsersDatabaseService,
-    ) = SignUpUseCase(accountService, usersDatabaseService)
-
-    @Provides
-    fun provideForgotPasswordUseCase(accountService: AccountService) =
-        ForgotPasswordUseCase(accountService)
-
-    @Provides
-    fun provideSignOutUseCase(accountService: AccountService) =
-        SignOutUseCase(accountService)
-
-    @Provides
-    fun provideUpdateProfileUseCase(
-        accountService: AccountService,
-        usersDatabaseService: UsersDatabaseService,
+        chatDatabaseService: ChatDatabaseService,
         storageService: StorageService,
-    ) = UpdateProfileUseCase(accountService, usersDatabaseService, storageService)
-
-    @Provides
-    fun provideGetMessagesUseCase(chatDatabaseService: ChatDatabaseService) =
-        GetMessagesUseCase(chatDatabaseService)
-
-    @Provides
-    fun provideGetUsersUseCase(
-        accountService: AccountService,
-        usersDatabaseService: UsersDatabaseService,
-    ) = GetUsersUseCase(accountService, usersDatabaseService)
-
-    @Provides
-    fun provideGetChatsUseCase(
-        usersDatabaseService: UsersDatabaseService,
-        chatDatabaseService: ChatDatabaseService
-    ) = GetChatsUseCase(usersDatabaseService, chatDatabaseService)
+    ): BaseUseCase {
+        return BaseUseCase(
+            deleteAccountUseCase = DeleteAccountUseCase(accountService, usersDatabaseService, chatDatabaseService),
+            forgotPasswordUseCase = ForgotPasswordUseCase(accountService),
+            getChatsUseCase = GetChatsUseCase(usersDatabaseService, chatDatabaseService),
+            getMessagesUseCase = GetMessagesUseCase(chatDatabaseService),
+            getUsersUseCase = GetUsersUseCase(accountService, usersDatabaseService),
+            logInUseCase = LogInUseCase(accountService),
+            sendMessageUseCase = SendMessageUseCase(chatDatabaseService),
+            signOutUseCase = SignOutUseCase(accountService),
+            signUpUseCase = SignUpUseCase(accountService, usersDatabaseService),
+            updateProfileUseCase = UpdateProfileUseCase(accountService, usersDatabaseService, storageService),
+            validateEmail = ValidateEmail(),
+            validatePassword = ValidatePassword(),
+            validateRepeatedPassword = ValidateRepeatedPassword(),
+            validateUserName = ValidateUserName(),
+        )
+    }
 }

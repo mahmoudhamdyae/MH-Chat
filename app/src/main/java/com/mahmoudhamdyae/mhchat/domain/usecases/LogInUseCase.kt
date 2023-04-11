@@ -1,9 +1,8 @@
 package com.mahmoudhamdyae.mhchat.domain.usecases
 
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
-import javax.inject.Inject
 
-class LogInUseCase @Inject constructor(
+class LogInUseCase (
     private val accountService: AccountService
 ) {
 
