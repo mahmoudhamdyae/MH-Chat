@@ -6,6 +6,7 @@ import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.login.LogInDestination
+import kotlinx.coroutines.flow.collectLatest
 
 class DeleteAccountUseCase (
     private val accountService: AccountService,
@@ -15,14 +16,14 @@ class DeleteAccountUseCase (
 
     suspend operator fun invoke(password: String, navigate: (String) -> Unit) {
         if (validatePassword(password)) {
-            usersDatabaseService.getCurrentUser().collect {
+            usersDatabaseService.getCurrentUser().collectLatest {
                 val userChats = it?.chats
                 userChats?.forEach {  userChat ->
                     chatDatabaseService.delChat(userChat.chatId)
                 }
+                accountService.deleteAccount(accountService.currentUserEmail, password)
+                navigate(LogInDestination.route)
             }
-            accountService.deleteAccount(accountService.currentUserEmail, password)
-            navigate(LogInDestination.route)
         }
     }
 

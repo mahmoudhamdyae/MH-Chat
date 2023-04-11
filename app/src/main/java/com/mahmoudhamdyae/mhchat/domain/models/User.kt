@@ -5,6 +5,7 @@ data class User(
     val email: String = "",
     val userName: String = "",
     val imageUrl: String? = null,
+    val token: String = "",
     val chats: List<UserChat>? = null // chats: <toUserId, chatId>?
 )
 
