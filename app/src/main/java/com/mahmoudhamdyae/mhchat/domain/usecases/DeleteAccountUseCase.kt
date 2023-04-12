@@ -16,10 +16,11 @@ class DeleteAccountUseCase (
 
     suspend operator fun invoke(password: String, navigate: (String) -> Unit) {
         if (validatePassword(password)) {
-            usersDatabaseService.getCurrentUser().collectLatest {
-                val userChats = it?.chats
+            usersDatabaseService.userChats.collectLatest { userChats ->
                 userChats?.forEach {  userChat ->
-                    chatDatabaseService.delChat(userChat.chatId)
+                    if (userChat != null) {
+                        chatDatabaseService.delChat(userChat.chatId)
+                    }
                 }
                 accountService.deleteAccount(accountService.currentUserEmail, password)
                 navigate(LogInDestination.route)

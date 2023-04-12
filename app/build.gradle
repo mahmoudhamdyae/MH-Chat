@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 
     id 'kotlin-kapt'
+    id 'kotlin-parcelize'
     id 'dagger.hilt.android.plugin'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
@@ -68,6 +69,8 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
+    implementation "androidx.compose.material:material-icons-extended:1.4.1"
+
     // Material 3
     implementation 'androidx.compose.material3:material3:1.1.0-beta01'
 
@@ -99,6 +102,9 @@ dependencies {
 
     // Lottie Animations
     implementation "com.airbnb.android:lottie-compose:6.0.0"
+
+    // Gson
+    implementation "com.google.code.gson:gson:2.10.1"
 }
 
 kapt {

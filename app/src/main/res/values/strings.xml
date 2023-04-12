@@ -68,6 +68,10 @@
     <!-- Messages -->
     <string name="message_empty">Message cannot be empty.</string>
     <string name="message_text_field_label">Message</string>
+    <string name="jump_to_bottom">Jump to bottom</string>
+    <string name="send_button">Send</string>
+    <string name="author_me">Me</string>
+    <string name="today">Today</string>
 
     <!-- Content Descriptions -->
     <string name="email_content_description">Email</string>

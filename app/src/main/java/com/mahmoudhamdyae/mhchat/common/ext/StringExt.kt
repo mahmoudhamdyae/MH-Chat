@@ -28,7 +28,7 @@ fun String.passwordErrorMessage(): Int? {
     }
 }
 
-fun String?.encryptImageUrl(): String? {
+fun String?.encryptImageUrl(): String {
     return Base64.getEncoder().encodeToString(this?.toByteArray()).replace("/", "*")
 }
 

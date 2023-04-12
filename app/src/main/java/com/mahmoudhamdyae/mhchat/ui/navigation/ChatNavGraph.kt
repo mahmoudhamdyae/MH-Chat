@@ -3,7 +3,7 @@ package com.mahmoudhamdyae.mhchat.ui.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.mahmoudhamdyae.mhchat.common.ext.decryptImageUrl
+import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.ui.ChatAppState
 import com.mahmoudhamdyae.mhchat.ui.composable.messagesViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.login.LogInDestination
@@ -76,13 +76,13 @@ fun NavGraphBuilder.chatGraph(appState: ChatAppState) {
         arguments = MessagesDestination.arguments
     ) { navBackStack ->
         val chatId = navBackStack.arguments?.getString(MessagesDestination.chatIdArg)!!
-        val imageProfileId =
-            navBackStack.arguments?.getString(MessagesDestination.imageProfileArg).decryptImageUrl()
-        val userNameId = navBackStack.arguments?.getString(MessagesDestination.userNameArg)!!
+        @Suppress("DEPRECATION")
+        val user = navBackStack.arguments?.getParcelable<User>(MessagesDestination.userArg)!!
         MessagesScreen(
             navigateUp = navigateUp,
-            imageProfile = imageProfileId,
-            userName = userNameId,
+            openScreen = openScreen,
+            imageProfile = user.imageUrl,
+            userName = user.userName,
             viewModel = messagesViewModel(
                 chatId = chatId,
             )
