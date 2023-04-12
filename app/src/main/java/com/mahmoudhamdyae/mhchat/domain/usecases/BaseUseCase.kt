@@ -6,6 +6,7 @@ data class BaseUseCase (
     val getChatsUseCase: GetChatsUseCase,
     val getMessagesUseCase: GetMessagesUseCase,
     val getUsersUseCase: GetUsersUseCase,
+    val getUserUseCase: GetUserUseCase,
     val logInUseCase: LogInUseCase,
     val sendMessageUseCase: SendMessageUseCase,
     val signOutUseCase: SignOutUseCase,

@@ -12,23 +12,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -39,6 +31,7 @@ import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.domain.models.AssetParamType
 import com.mahmoudhamdyae.mhchat.domain.models.Chat
 import com.mahmoudhamdyae.mhchat.domain.models.Message
+import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.ui.composable.BasicToolBar
 import com.mahmoudhamdyae.mhchat.ui.composable.EmptyScreen
 import com.mahmoudhamdyae.mhchat.ui.composable.ProfileImage
@@ -65,13 +58,16 @@ object MessagesDestination: NavigationDestination {
 fun MessagesScreen(
     navigateUp: () -> Unit,
     openScreen: (String) -> Unit,
-    imageProfile: String?,
-    userName: String,
+    anotherUser: User,
     modifier: Modifier = Modifier,
     viewModel: MessagesViewModel,
 ) {
     val messages: List<Message>? =
         viewModel.chat.collectAsStateWithLifecycle(initialValue = Chat()).value?.messages?.reversed()
+
+    val currentUser = viewModel.currentUser.collectAsStateWithLifecycle(User()).value
+//    val context = LocalContext.current
+//    Toast.makeText(context, currentUser.toString(), Toast.LENGTH_SHORT).show()
 
     if (messages == null || messages.isEmpty()) {
         EmptyScreen()
@@ -81,8 +77,8 @@ fun MessagesScreen(
             openScreen = openScreen,
             messages = messages,
             onMessageSend = viewModel::onMessageSend,
-            imageProfile = imageProfile,
-            userName = userName,
+            currentUser = currentUser,
+            anotherUser = anotherUser,
             modifier = modifier
         )
     }
@@ -96,8 +92,8 @@ fun MessagesScreenContent(
     openScreen: (String) -> Unit,
     messages: List<Message>,
     onMessageSend: (String) -> Unit,
-    imageProfile: String?,
-    userName: String,
+    currentUser: User?,
+    anotherUser: User,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberLazyListState()
@@ -114,8 +110,8 @@ fun MessagesScreenContent(
             ) {
                 MessagesList(
                     messages = messages,
-                    imageProfile = imageProfile,
-                    userName = userName,
+                    currentUser = currentUser,
+                    anotherUser = anotherUser,
                     openScreen = openScreen,
                     modifier = Modifier.weight(1f),
                     scrollState = scrollState
@@ -144,16 +140,14 @@ fun MessagesScreenContent(
 @Composable
 fun MessagesList(
     messages: List<Message>,
-    imageProfile: String?,
-    userName: String,
+    currentUser: User?,
+    anotherUser: User,
     openScreen: (String) -> Unit,
     modifier: Modifier = Modifier,
     scrollState: LazyListState = rememberLazyListState(),
 ) {
     val scope = rememberCoroutineScope()
     Box(modifier = modifier) {
-
-        val authorMe = stringResource(id = R.string.author_me)
 
         val visibleState = remember {
             MutableTransitionState(false).apply {
@@ -214,11 +208,11 @@ fun MessagesList(
                             val isFirstMessageByAuthor = prevAuthor != content.author
                             val isLastMessageByAuthor = nextAuthor != content.author
                             item(key = message.messageId) {
+                                val isUserMe = message.author == currentUser?.userId
                                 MessageListItem(
                                     message = message,
-                                    imageProfile = imageProfile,
-                                    userName = userName,
-                                    isUserMe = message.author == authorMe,
+                                    user = if (isUserMe) currentUser else anotherUser,
+                                    isUserMe = isUserMe,
                                     isFirstMessageByAuthor = isFirstMessageByAuthor,
                                     isLastMessageByAuthor = isLastMessageByAuthor,
                                     openScreen = openScreen,
@@ -271,14 +265,14 @@ fun MessagesList(
 @Composable
 fun MessageListItem(
     message: Message,
-    imageProfile: String?,
-    userName: String,
+    user: User?,
     isUserMe: Boolean,
     isFirstMessageByAuthor: Boolean,
     isLastMessageByAuthor: Boolean,
     openScreen: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+
     val borderColor = if (isUserMe) {
         MaterialTheme.colorScheme.primary
     } else {
@@ -286,7 +280,10 @@ fun MessageListItem(
     }
 
     val spaceBetweenAuthors = if (isLastMessageByAuthor) modifier.padding(top = 8.dp) else modifier
-    Row(modifier = spaceBetweenAuthors) {
+    Row(
+        horizontalArrangement = if (isUserMe) Arrangement.End else Arrangement.Start,
+        modifier = spaceBetweenAuthors
+    ) {
         if (isLastMessageByAuthor) {
             ProfileImage(
                 modifier = Modifier
@@ -296,7 +293,7 @@ fun MessageListItem(
                     .border(1.5.dp, borderColor, CircleShape)
                     .border(3.dp, MaterialTheme.colorScheme.surface, CircleShape)
                     .align(Alignment.Top),
-                photoUri = imageProfile?.toUri()
+                photoUri = user?.imageUrl?.toUri()
             )
         } else {
             // Space under avatar
@@ -304,7 +301,7 @@ fun MessageListItem(
         }
         AuthorAndTextMessage(
             message = message,
-            userName = userName,
+            userName = if (isUserMe) "Me" else user?.userName,
             isUserMe = isUserMe,
             isFirstMessageByAuthor = isFirstMessageByAuthor,
             isLastMessageByAuthor = isLastMessageByAuthor,
@@ -395,7 +392,7 @@ fun ClickableMessage(
 @Composable
 fun AuthorAndTextMessage(
     message: Message,
-    userName: String,
+    userName: String?,
     isUserMe: Boolean,
     isFirstMessageByAuthor: Boolean,
     isLastMessageByAuthor: Boolean,
@@ -448,11 +445,11 @@ private fun RowScope.DayHeaderLine() {
 }
 
 @Composable
-private fun AuthorNameTimestamp(message: Message, userName: String) {
+private fun AuthorNameTimestamp(message: Message, userName: String?) {
     // Combine author and timestamp for a11y.
     Row(modifier = Modifier.semantics(mergeDescendants = true) {}) {
         Text(
-            text = userName,
+            text = userName ?: "",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .alignBy(LastBaseline)
@@ -474,8 +471,7 @@ fun MessageListItemPreview() {
     val fakeMessage = Message(body = "Hello")
     MessageListItem(
         message = fakeMessage,
-        imageProfile = null,
-        userName = "Mahmoud",
+        user = null,
         isFirstMessageByAuthor = false,
         isLastMessageByAuthor = true,
         isUserMe = false,
@@ -492,8 +488,8 @@ fun MessagesListPreview() {
     )
     MessagesList(
         messages = fakeMessages,
-        imageProfile = null,
-        userName = "Mahmoud",
+        currentUser = null,
+        anotherUser = User(),
         openScreen = {},
     )
 }
@@ -509,8 +505,8 @@ fun MessagesScreenContentPreview() {
         navigateUp = {},
         messages = fakeMessages,
         onMessageSend = {},
-        imageProfile = null,
-        userName = "Mahmoud",
+        currentUser = null,
+        anotherUser = User(),
         openScreen = {},
     )
 }

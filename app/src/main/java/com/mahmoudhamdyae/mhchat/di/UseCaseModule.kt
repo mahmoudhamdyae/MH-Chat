@@ -27,6 +27,7 @@ object UseCaseModule {
             getChatsUseCase = GetChatsUseCase(usersDatabaseService, chatDatabaseService),
             getMessagesUseCase = GetMessagesUseCase(chatDatabaseService),
             getUsersUseCase = GetUsersUseCase(accountService, usersDatabaseService),
+            getUserUseCase = GetUserUseCase(accountService, usersDatabaseService),
             logInUseCase = LogInUseCase(accountService),
             sendMessageUseCase = SendMessageUseCase(chatDatabaseService),
             signOutUseCase = SignOutUseCase(accountService),

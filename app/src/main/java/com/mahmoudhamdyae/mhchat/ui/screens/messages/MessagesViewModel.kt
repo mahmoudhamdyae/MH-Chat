@@ -3,6 +3,7 @@ package com.mahmoudhamdyae.mhchat.ui.screens.messages
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.mahmoudhamdyae.mhchat.domain.models.Chat
+import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.usecases.BaseUseCase
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
@@ -18,6 +19,13 @@ class MessagesViewModel @AssistedInject constructor(
 ): ChatViewModel(logService) {
 
     var chat: Flow<Chat?> = useCase.getMessagesUseCase(chatId)
+    lateinit var currentUser: Flow<User?>
+
+    init {
+        launchCatching {
+            currentUser = useCase.getUserUseCase()
+        }
+    }
 
     fun onMessageSend(messageBody: String) {
         launchCatching {

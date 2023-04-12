@@ -81,8 +81,7 @@ fun NavGraphBuilder.chatGraph(appState: ChatAppState) {
         MessagesScreen(
             navigateUp = navigateUp,
             openScreen = openScreen,
-            imageProfile = user.imageUrl,
-            userName = user.userName,
+            anotherUser = user,
             viewModel = messagesViewModel(
                 chatId = chatId,
             )
