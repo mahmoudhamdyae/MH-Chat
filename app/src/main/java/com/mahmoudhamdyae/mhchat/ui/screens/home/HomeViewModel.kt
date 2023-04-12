@@ -1,5 +1,6 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.home
 
+import com.mahmoudhamdyae.mhchat.common.ext.encryptImageUrl
 import com.mahmoudhamdyae.mhchat.data.services.PreferencesRepository
 import com.mahmoudhamdyae.mhchat.domain.models.Message
 import com.mahmoudhamdyae.mhchat.domain.models.User
@@ -72,7 +73,8 @@ class HomeViewModel @Inject constructor(
                 val chatId = userChats?.first {
                     it?.toUserId == user.userId
                 }?.chatId
-                navigateTo("${MessagesDestination.route}/${chatId}/${user.imageUrl}/${user.userName}")
+                val newImageUrl = user.imageUrl?.encryptImageUrl()
+                navigateTo("${MessagesDestination.route}/${chatId}/${newImageUrl}/${user.userName}")
             }
         }
     }

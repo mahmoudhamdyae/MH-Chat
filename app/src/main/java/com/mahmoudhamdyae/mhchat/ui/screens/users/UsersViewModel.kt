@@ -1,5 +1,6 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.users
 
+import com.mahmoudhamdyae.mhchat.common.ext.encryptImageUrl
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
@@ -23,7 +24,8 @@ class UsersViewModel @Inject constructor(
 
     fun onItemClick(user: User, navigateTo: (String) -> Unit) {
         getChatId(user) { chatId ->
-            navigateTo("${MessagesDestination.route}/${chatId}/${user.imageUrl}/${user.userName}")
+            val newImageUrl = user.imageUrl?.encryptImageUrl()
+            navigateTo("${MessagesDestination.route}/${chatId}/${newImageUrl}/${user.userName}")
         }
     }
 

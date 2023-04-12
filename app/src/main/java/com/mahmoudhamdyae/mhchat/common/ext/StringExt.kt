@@ -2,6 +2,7 @@ package com.mahmoudhamdyae.mhchat.common.ext
 
 import android.util.Patterns
 import com.mahmoudhamdyae.mhchat.R
+import java.util.*
 import java.util.regex.Pattern
 
 private const val MIN_PASS_LENGTH = 6
@@ -25,6 +26,14 @@ fun String.passwordErrorMessage(): Int? {
     } else {
         null
     }
+}
+
+fun String?.encryptImageUrl(): String? {
+    return Base64.getEncoder().encodeToString(this?.toByteArray()).replace("/", "*")
+}
+
+fun String?.decryptImageUrl(): String {
+    return String(Base64.getDecoder().decode(this?.replace("*", "/")))
 }
 
 fun String.passwordMatches(repeated: String): Boolean {
