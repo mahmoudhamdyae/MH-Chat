@@ -16,6 +16,8 @@ import com.mahmoudhamdyae.mhchat.ui.screens.home.HomeDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.home.HomeScreen
 import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesScreen
+import com.mahmoudhamdyae.mhchat.ui.screens.notifications.NotificationsDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.notifications.NotificationsScreen
 import com.mahmoudhamdyae.mhchat.ui.screens.onboarding.OnBoardingDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.onboarding.OnBoardingScreen
 import com.mahmoudhamdyae.mhchat.ui.screens.profile.ProfileDestination
@@ -29,7 +31,7 @@ import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersScreen
  * Provides Navigation graph for the application.
  */
 @ExperimentalPagerApi
-fun NavGraphBuilder.chatGraph(appState: ChatAppState) {
+fun NavGraphBuilder.chatGraph(appState: ChatAppState, openDrawer: () -> Unit) {
 
     val openScreen: (String) -> Unit = { route -> appState.navigate(route) }
     val openAndPopUp: (String) -> Unit = { route -> appState.clearAndNavigate(route) }
@@ -38,7 +40,8 @@ fun NavGraphBuilder.chatGraph(appState: ChatAppState) {
     composable(HomeDestination.route) {
         HomeScreen(
             openAndPopUp = openAndPopUp,
-            openScreen = openScreen
+            openScreen = openScreen,
+            openDrawer = openDrawer
         )
     }
 
@@ -98,5 +101,9 @@ fun NavGraphBuilder.chatGraph(appState: ChatAppState) {
         OnBoardingScreen(
             openAndPopUp = openAndPopUp
         )
+    }
+
+    composable(NotificationsDestination.route) {
+        NotificationsScreen()
     }
 }

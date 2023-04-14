@@ -26,7 +26,6 @@ import com.mahmoudhamdyae.mhchat.ui.composable.*
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.settings.SettingsDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersDestination
-import kotlinx.coroutines.launch
 import java.util.*
 
 object HomeDestination: NavigationDestination {
@@ -38,46 +37,24 @@ object HomeDestination: NavigationDestination {
 fun HomeScreen(
     openAndPopUp: (String) -> Unit,
     openScreen: (String) -> Unit,
+    openDrawer: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val list by viewModel.uiState.collectAsStateWithLifecycle()
+
     LaunchedEffect(Unit) {
         viewModel.initialize(openAndPopUp)
     }
 
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-    val items = listOf(Icons.Default.Favorite, Icons.Default.Face, Icons.Default.Email)
-    val selectedItem = remember { mutableStateOf(items[0]) }
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Spacer(Modifier.height(12.dp))
-                items.forEach { item ->
-                    NavigationDrawerItem(
-                        icon = { Icon(item, contentDescription = null) },
-                        label = { Text(item.name) },
-                        selected = item == selectedItem.value,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            selectedItem.value = item
-                        },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
-                }
-            }
-        }) {
-        val list by viewModel.uiState.collectAsStateWithLifecycle()
-        HomeScreenContent(
-            list = list,
-            onItemClick = viewModel::onItemClick,
-            onSignOut = viewModel::onSignOut,
-            openScreen = openScreen,
-            openDrawer = { scope.launch { drawerState.open() } },
-            modifier = modifier
-        )
-    }
+    HomeScreenContent(
+        list = list,
+        onItemClick = viewModel::onItemClick,
+        onSignOut = viewModel::onSignOut,
+        openScreen = openScreen,
+        openDrawer = openDrawer,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -95,7 +72,7 @@ fun HomeScreenContent(
         modifier = modifier,
         topBar = { ActionToolbar(
             title = HomeDestination.titleRes,
-            endActionIcons = listOf(Icons.Default.ExitToApp, Icons.Default.Settings),
+            endActionIcons = listOf(Icons.Default.Logout, Icons.Default.Settings),
             endActions = listOf({
                 showWarningDialog = true
             }, {
@@ -129,17 +106,12 @@ fun HomeScreenContent(
     }
 
     if (showWarningDialog) {
-        AlertDialog(
-            title = { Text(stringResource(R.string.sign_out_title)) },
-            text = { Text(stringResource(R.string.sign_out_description)) },
-            dismissButton = { DialogCancelButton(R.string.cancel) { showWarningDialog = false } },
-            confirmButton = {
-                DialogConfirmButton(R.string.sign_out_confirm) {
-                    onSignOut(openScreen)
-                    showWarningDialog = false
-                }
-            },
-            onDismissRequest = { showWarningDialog = false }
+        SignOutDialog(
+            cancelAction = { showWarningDialog = false},
+            action = {
+                onSignOut(openScreen)
+                showWarningDialog = false
+            }
         )
     }
 }
