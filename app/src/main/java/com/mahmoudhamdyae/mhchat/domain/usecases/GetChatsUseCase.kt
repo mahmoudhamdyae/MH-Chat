@@ -24,8 +24,9 @@ class GetChatsUseCase (
             Log.i("usecase chatsIds", chatsIds.toString())
             if (usersIds.isNotEmpty()) {
                 usersDatabaseService.specificUsers(usersIds).collect { users ->
+                    Log.i("usecase users1", users.toString())
                     chatDatabaseService.lastMessages(chatsIds).collect { messages ->
-                        Log.i("usecase users", users.toString())
+                        Log.i("usecase users2", users.toString())
                         Log.i("usecase messages", messages.toString())
                         val ret: MutableList<Pair<User?, Message?>> = mutableListOf()
                         users.forEach {  user ->
