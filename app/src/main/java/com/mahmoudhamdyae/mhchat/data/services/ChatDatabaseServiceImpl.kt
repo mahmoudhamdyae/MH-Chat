@@ -4,6 +4,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.snapshots
 import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.firestore.ktx.toObjects
 import com.mahmoudhamdyae.mhchat.domain.models.Chat
 import com.mahmoudhamdyae.mhchat.domain.models.Message
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
@@ -27,11 +28,13 @@ class ChatDatabaseServiceImpl @Inject constructor(
             chatCollection.document(chatId).snapshots().map { snapshot -> snapshot.toObject() }
     }
 
-    override val lastMessage: (String) -> Flow<Message?>
-        get() = { chatId ->
-            chatCollection.document(chatId).snapshots().map { snapshot ->
-                val chat = snapshot.toObject() as Chat?
-                chat?.messages?.last()
+    override val lastMessages: (List<String?>) -> Flow<List<Message?>>
+        get() = { chatIds ->
+            chatCollection.whereIn("chatId", chatIds).snapshots().map { snapshot ->
+                val chats = snapshot.toObjects<Chat>()
+                chats.map { chat ->
+                    chat.messages.last()
+                }
             }
         }
 

@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -66,22 +66,16 @@ fun MessagesScreen(
         viewModel.chat.collectAsStateWithLifecycle(initialValue = Chat()).value?.messages?.reversed()
 
     val currentUser = viewModel.currentUser.collectAsStateWithLifecycle(User()).value
-//    val context = LocalContext.current
-//    Toast.makeText(context, currentUser.toString(), Toast.LENGTH_SHORT).show()
 
-    if (messages == null || messages.isEmpty()) {
-        EmptyScreen()
-    } else {
-        MessagesScreenContent(
-            navigateUp = navigateUp,
-            openScreen = openScreen,
-            messages = messages,
-            onMessageSend = viewModel::onMessageSend,
-            currentUser = currentUser,
-            anotherUser = anotherUser,
-            modifier = modifier
-        )
-    }
+    MessagesScreenContent(
+        navigateUp = navigateUp,
+        openScreen = openScreen,
+        messages = messages,
+        onMessageSend = viewModel::onMessageSend,
+        currentUser = currentUser,
+        anotherUser = anotherUser,
+        modifier = modifier
+    )
 
 }
 
@@ -90,7 +84,7 @@ fun MessagesScreen(
 fun MessagesScreenContent(
     navigateUp: () -> Unit,
     openScreen: (String) -> Unit,
-    messages: List<Message>,
+    messages: List<Message>?,
     onMessageSend: (String) -> Unit,
     currentUser: User?,
     anotherUser: User,
@@ -108,14 +102,18 @@ fun MessagesScreenContent(
                     .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
-                MessagesList(
-                    messages = messages,
-                    currentUser = currentUser,
-                    anotherUser = anotherUser,
-                    openScreen = openScreen,
-                    modifier = Modifier.weight(1f),
-                    scrollState = scrollState
-                )
+                if (messages == null || messages.isEmpty()) {
+                    EmptyScreen(modifier = Modifier.weight(1f))
+                } else {
+                    MessagesList(
+                        messages = messages,
+                        currentUser = currentUser,
+                        anotherUser = anotherUser,
+                        openScreen = openScreen,
+                        modifier = Modifier.weight(1f),
+                        scrollState = scrollState
+                    )
+                }
                 UserInput(
                     resetScroll = {
                         scope.launch {
@@ -325,9 +323,10 @@ fun ChatItemBubble(
     }
 
     Column {
+        val chatBubbleShape = RoundedCornerShape(4.dp, 20.dp, 20.dp, 20.dp)
         Surface(
             color = backgroundBubbleColor,
-//            shape = ChatBubbleShape
+            shape = chatBubbleShape
         ) {
             ClickableMessage(
                 message = message,
@@ -357,7 +356,6 @@ fun ClickableMessage(
     message: Message,
     isUserMe: Boolean
 ) {
-    val uriHandler = LocalUriHandler.current
 
 //    val styledMessage = messageFormatter(
 //        text = message.body,

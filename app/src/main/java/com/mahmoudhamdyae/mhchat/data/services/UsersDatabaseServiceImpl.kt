@@ -24,6 +24,11 @@ class UsersDatabaseServiceImpl @Inject constructor(
     override val users: Flow<List<User>>
         get() = userCollection.snapshots().map { snapshot -> snapshot.toObjects() }
 
+    override val specificUsers: (List<String?>) -> Flow<List<User>>
+        get() = { usersIds ->
+            userCollection.whereIn("userId", usersIds).snapshots().map { snapshot -> snapshot.toObjects() }
+        }
+
     override val userChats: Flow<List<UserChat?>?>
         get() =
             userCollection.document(accountService.currentUserId).collection(CHATS_COLLECTION)

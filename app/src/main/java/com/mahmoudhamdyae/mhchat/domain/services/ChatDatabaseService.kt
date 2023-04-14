@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface ChatDatabaseService {
 
     val chat: (String) -> Flow<Chat?>
-    val lastMessage: (String) -> Flow<Message?>
+    val lastMessages: (List<String?>) -> Flow<List<Message?>>
 
     suspend fun createChat(toUserId: String, chatId: String)
     suspend fun updateChat(chatId: String, messageBody: String)

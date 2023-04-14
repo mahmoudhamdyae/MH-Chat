@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface UsersDatabaseService {
 
     val users: Flow<List<User>>
+    val specificUsers: (List<String?>) -> Flow<List<User>>
     val userChats: Flow<List<UserChat?>?>
 
     suspend fun getUser(userId: String): Flow<User?>
