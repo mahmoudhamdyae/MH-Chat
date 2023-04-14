@@ -172,13 +172,6 @@ fun MessagesList(
                 WindowInsets.statusBars.add(WindowInsets(top = 90.dp)).asPaddingValues(),
                 modifier = Modifier.fillMaxSize()
             ) {
-//                for (index in messages.indices) {
-//                    val prevAuthor = messages.getOrNull(index - 1)?.author
-//                    val nextAuthor = messages.getOrNull(index + 1)?.author
-//                    val content = messages[index]
-//                    val isFirstMessageByAuthor = prevAuthor != content.author
-//                    val isLastMessageByAuthor = nextAuthor != content.author
-
                     val messagesGrouped = messages.groupBy { it.dayOfMonth }
 
                     messagesGrouped.forEach { (date, messages) ->
@@ -333,21 +326,6 @@ fun ChatItemBubble(
                 isUserMe = isUserMe,
             )
         }
-
-//        message.image?.let {
-//            Spacer(modifier = Modifier.height(4.dp))
-//            Surface(
-//                color = backgroundBubbleColor,
-//                shape = ChatBubbleShape
-//            ) {
-//                Image(
-//                    painter = painterResource(it),
-//                    contentScale = ContentScale.Fit,
-//                    modifier = Modifier.size(160.dp),
-//                    contentDescription = stringResource(id = R.string.attached_image)
-//                )
-//            }
-//        }
     }
 }
 

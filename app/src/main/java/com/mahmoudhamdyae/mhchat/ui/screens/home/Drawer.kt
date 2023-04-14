@@ -34,7 +34,7 @@ enum class DrawerElement(val icon: ImageVector, @StringRes val text: Int, val de
 
 @Composable
 fun DrawerContent(
-    currentUser: User,
+    currentUser: User?,
     openScreen: (String) -> Unit,
     onSignOut: ((String) -> Unit) -> Unit,
     selectedItem: MutableState<DrawerElement>,
@@ -54,19 +54,21 @@ fun DrawerContent(
 
 @Composable
 private fun DrawerHeader(
-    user: User,
+    user: User?,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth().padding(top = 36.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        ProfileImage(
-            modifier = Modifier.size(120.dp),
-            photoUri = user.imageUrl?.toUri(),
-        )
-        Text(modifier = Modifier.padding(top = 12.dp), text = user.userName, fontSize = 26.sp, fontWeight = FontWeight.Bold)
-        Text(modifier = Modifier.padding(top = 8.dp, bottom = 30.dp), text = user.email, fontSize = 16.sp, fontWeight = FontWeight.Normal)
+    user?.let {
+        Column(
+            modifier = modifier.fillMaxWidth().padding(top = 36.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ProfileImage(
+                modifier = Modifier.size(120.dp),
+                photoUri = user.imageUrl?.toUri(),
+            )
+            Text(modifier = Modifier.padding(top = 12.dp), text = user.userName, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+            Text(modifier = Modifier.padding(top = 8.dp, bottom = 30.dp), text = user.email, fontSize = 16.sp, fontWeight = FontWeight.Normal)
+        }
     }
 }
 

@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -24,10 +25,8 @@ import com.mahmoudhamdyae.mhchat.ui.screens.home.HomeDestination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ChatApp(
-    modifier: Modifier = Modifier,
     viewModel: DrawerViewModel = hiltViewModel(),
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
@@ -38,37 +37,25 @@ fun ChatApp(
     val scope = rememberCoroutineScope()
     val openScreen: (String) -> Unit = { appState.navController.navigate(it) { launchSingleTop = true } }
     var showWarningDialog by remember { mutableStateOf(false) }
+    val currentUser: User? = viewModel.currentUser.collectAsStateWithLifecycle(User()).value
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            DrawerContent(
-                currentUser = User(userName = "haha", email = "hehe"),
-                openScreen = openScreen,
-                onSignOut = { showWarningDialog = true },
-                selectedItem = selectedItem,
-                closeDrawer = { scope.launch { drawerState.close() } }
-            )
-        }) {
-        Scaffold(
-            snackbarHost = {
-                SnackbarHost(
-                    hostState = snackBarHostState,
-                    modifier = Modifier.padding(8.dp),
-                    snackbar = { snackBarData ->
-                        Snackbar(snackBarData, contentColor = MaterialTheme.colorScheme.onPrimary)
-                    }
+    if (currentUser?.userName?.isNotEmpty() == true) {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                DrawerContent(
+                    currentUser = currentUser,
+                    openScreen = openScreen,
+                    onSignOut = { showWarningDialog = true },
+                    selectedItem = selectedItem,
+                    closeDrawer = { scope.launch { drawerState.close() } }
                 )
-            },
-        ) { innerPadding ->
-            NavHost(
-                navController = appState.navController,
-                startDestination = HomeDestination.route,
-                modifier = modifier.padding(innerPadding)
-            ) {
-                chatGraph(appState) { scope.launch { drawerState.open() } }
             }
+        ) {
+            ChatAppContent(snackBarHostState, appState, currentUser, scope, drawerState)
         }
+    } else {
+        ChatAppContent(snackBarHostState, appState, currentUser, scope, drawerState)
     }
 
     if (showWarningDialog) {
@@ -79,6 +66,41 @@ fun ChatApp(
                 showWarningDialog = false
             }
         )
+    }
+}
+
+@Composable
+@OptIn(ExperimentalPagerApi::class)
+private fun ChatAppContent(
+    snackBarHostState: SnackbarHostState,
+    appState: ChatAppState,
+    currentUser: User?,
+    scope: CoroutineScope,
+    drawerState: DrawerState,
+    modifier: Modifier = Modifier,
+) {
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackBarHostState,
+                modifier = Modifier.padding(8.dp),
+                snackbar = { snackBarData ->
+                    Snackbar(snackBarData, contentColor = MaterialTheme.colorScheme.onPrimary)
+                }
+            )
+        },
+    ) { innerPadding ->
+        NavHost(
+            navController = appState.navController,
+            startDestination = HomeDestination.route,
+            modifier = modifier.padding(innerPadding)
+        ) {
+            chatGraph(appState) {
+                if (currentUser?.userName?.isNotEmpty() == true) {
+                    scope.launch { drawerState.open() }
+                }
+            }
+        }
     }
 }
 
