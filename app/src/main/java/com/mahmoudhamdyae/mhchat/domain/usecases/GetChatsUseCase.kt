@@ -5,8 +5,6 @@ import com.mahmoudhamdyae.mhchat.domain.models.Message
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
 
 class GetChatsUseCase (
     private val usersDatabaseService: UsersDatabaseService,
@@ -14,7 +12,7 @@ class GetChatsUseCase (
 ) {
 
     suspend operator fun invoke(result: (List<Pair<User?, Message?>>) -> Unit) {
-        usersDatabaseService.userChats.map { userChats ->
+        usersDatabaseService.userChats.collect { userChats ->
             Log.i("usecase", userChats.toString())
             val usersIds: MutableList<String?> = mutableListOf()
             val chatsIds: MutableList<String?> = mutableListOf()
@@ -24,14 +22,21 @@ class GetChatsUseCase (
             }
             Log.i("usecase usersIds", usersIds.toString())
             Log.i("usecase chatsIds", chatsIds.toString())
-            usersDatabaseService.specificUsers(usersIds).map { users ->
-                chatDatabaseService.lastMessages(chatsIds).map { messages ->
+            usersDatabaseService.specificUsers(usersIds).collect { users ->
+                chatDatabaseService.lastMessages(chatsIds).collect { messages ->
                     Log.i("usecase users", users.toString())
                     Log.i("usecase messages", messages.toString())
-                    Log.i("usecase ret" , users.zip(messages).toString())
-                    result(users.zip(messages))
-                }.collect()
-            }.collect()
-        }.collect()
+                    val ret: MutableList<Pair<User?, Message?>> = mutableListOf()
+                        users.forEach {  user ->
+                            val returnedMessage = messages.find { message ->
+                                message?.fromUserId == user.userId || message?.toUserId == user.userId
+                            }
+                            ret.add(Pair(user, returnedMessage))
+                        }
+                        Log.i("usecase ret" , ret.toString())
+                        result(ret)
+                }
+            }
+        }
     }
 }

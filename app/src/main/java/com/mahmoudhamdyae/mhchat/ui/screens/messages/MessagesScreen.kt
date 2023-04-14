@@ -85,7 +85,7 @@ fun MessagesScreenContent(
     navigateUp: () -> Unit,
     openScreen: (String) -> Unit,
     messages: List<Message>?,
-    onMessageSend: (String) -> Unit,
+    onMessageSend: (String, String) -> Unit,
     currentUser: User?,
     anotherUser: User,
     modifier: Modifier = Modifier,
@@ -121,7 +121,7 @@ fun MessagesScreenContent(
                         }
                     },
                     modifier = Modifier.padding(LocalSpacing.current.medium)
-                ) { onMessageSend(it) }
+                ) { onMessageSend(it, anotherUser.userId) }
             }
 
             BasicToolBar(
@@ -200,13 +200,13 @@ fun MessagesList(
                         }
 
                         messages.forEachIndexed { index, message ->
-                            val prevAuthor = messages.getOrNull(index - 1)?.author
-                            val nextAuthor = messages.getOrNull(index + 1)?.author
+                            val prevAuthor = messages.getOrNull(index - 1)?.fromUserId
+                            val nextAuthor = messages.getOrNull(index + 1)?.fromUserId
                             val content = messages[index]
-                            val isFirstMessageByAuthor = prevAuthor != content.author
-                            val isLastMessageByAuthor = nextAuthor != content.author
+                            val isFirstMessageByAuthor = prevAuthor != content.fromUserId
+                            val isLastMessageByAuthor = nextAuthor != content.fromUserId
                             item(key = message.messageId) {
-                                val isUserMe = message.author == currentUser?.userId
+                                val isUserMe = message.fromUserId == currentUser?.userId
                                 MessageListItem(
                                     message = message,
                                     user = if (isUserMe) currentUser else anotherUser,
@@ -502,7 +502,7 @@ fun MessagesScreenContentPreview() {
     MessagesScreenContent(
         navigateUp = {},
         messages = fakeMessages,
-        onMessageSend = {},
+        onMessageSend = { _, _ -> },
         currentUser = null,
         anotherUser = User(),
         openScreen = {},

@@ -46,10 +46,11 @@ class ChatDatabaseServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateChat(chatId: String, messageBody: String) {
+    override suspend fun updateChat(chatId: String, messageBody: String, toUserId: String) {
         val message = Message(
             body = messageBody,
-            author = accountService.currentUserId,
+            fromUserId = accountService.currentUserId,
+            toUserId = toUserId
         )
         trace(UPDATE_CHAT) {
             chatCollection.document(chatId).update("messages", FieldValue.arrayUnion(message)).await()

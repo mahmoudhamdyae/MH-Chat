@@ -27,9 +27,9 @@ class MessagesViewModel @AssistedInject constructor(
         }
     }
 
-    fun onMessageSend(messageBody: String) {
+    fun onMessageSend(messageBody: String, toUserId: String) {
         launchCatching {
-            useCase.sendMessageUseCase(chatId, messageBody)
+            useCase.sendMessageUseCase(chatId, messageBody, toUserId)
         }
     }
 

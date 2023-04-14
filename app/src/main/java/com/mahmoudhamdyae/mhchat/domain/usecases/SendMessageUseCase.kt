@@ -8,9 +8,9 @@ class SendMessageUseCase (
     private val chatDatabaseService: ChatDatabaseService
 ) {
 
-    suspend operator fun invoke(chatId: String, messageBody: String) {
+    suspend operator fun invoke(chatId: String, messageBody: String, toUserId: String) {
         if (validateMessageBody(messageBody)) {
-            chatDatabaseService.updateChat(chatId, messageBody)
+            chatDatabaseService.updateChat(chatId, messageBody, toUserId)
         }
     }
 
