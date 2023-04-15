@@ -31,13 +31,18 @@ import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersScreen
  * Provides Navigation graph for the application.
  */
 @ExperimentalPagerApi
-fun NavGraphBuilder.chatGraph(appState: ChatAppState, openDrawer: () -> Unit) {
+fun NavGraphBuilder.chatGraph(
+    appState: ChatAppState,
+    enableGestures: (Boolean) -> Unit,
+    openDrawer: () -> Unit
+) {
 
     val openScreen: (String) -> Unit = { route -> appState.navigate(route) }
     val openAndPopUp: (String) -> Unit = { route -> appState.clearAndNavigate(route) }
     val navigateUp = { appState.popUp() }
 
     composable(HomeDestination.route) {
+        enableGestures(true)
         HomeScreen(
             openAndPopUp = openAndPopUp,
             openScreen = openScreen,
@@ -46,10 +51,12 @@ fun NavGraphBuilder.chatGraph(appState: ChatAppState, openDrawer: () -> Unit) {
     }
 
     composable(LogInDestination.route) {
+        enableGestures(false)
         LogInScreen(openAndPopUp = openAndPopUp,)
     }
 
     composable(SignUpDestination.route) {
+        enableGestures(false)
         SignUpScreen(
             openAndPopUp = openAndPopUp,
             openScreen = openScreen
@@ -71,6 +78,7 @@ fun NavGraphBuilder.chatGraph(appState: ChatAppState, openDrawer: () -> Unit) {
     }
 
     composable(ProfileImageDestination.route) {
+        enableGestures(false)
         ProfileImageScreen(openScreen = openScreen)
     }
 
@@ -98,6 +106,7 @@ fun NavGraphBuilder.chatGraph(appState: ChatAppState, openDrawer: () -> Unit) {
     }
 
     composable(OnBoardingDestination.route) {
+        enableGestures(false)
         OnBoardingScreen(
             openAndPopUp = openAndPopUp
         )

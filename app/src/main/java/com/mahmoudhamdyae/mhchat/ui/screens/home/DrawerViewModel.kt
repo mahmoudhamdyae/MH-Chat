@@ -1,29 +1,28 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.home
 
 import com.mahmoudhamdyae.mhchat.domain.models.User
-import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.usecases.BaseUseCase
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.login.LogInDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class DrawerViewModel @Inject constructor(
-    val accountService: AccountService,
+open class DrawerViewModel @Inject constructor(
     private val useCase: BaseUseCase,
-    logService: LogService
-): ChatViewModel(logService) {
+    logService: LogService,
+) : ChatViewModel(logService) {
 
-    var currentUser: Flow<User?> = flow { }
+    private var _currentUser = MutableStateFlow<User?>(null)
+    val currentUser = _currentUser.asStateFlow()
 
-    init {
-        if (accountService.hasUser) {
-            launchCatching {
-                currentUser = useCase.getUserUseCase()
+    fun getCurrentUser() {
+        launchCatching {
+            useCase.getUserUseCase().collect {
+                _currentUser.value = it
             }
         }
     }
@@ -32,6 +31,7 @@ class DrawerViewModel @Inject constructor(
         launchCatching {
             useCase.signOutUseCase()
             navigate(LogInDestination.route)
+            _currentUser.value = null
         }
     }
 }

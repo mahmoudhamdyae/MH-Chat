@@ -15,7 +15,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
-import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.ui.composable.SignOutDialog
 import com.mahmoudhamdyae.mhchat.ui.navigation.chatGraph
 import com.mahmoudhamdyae.mhchat.ui.screens.home.DrawerContent
@@ -35,32 +34,38 @@ fun ChatApp(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val selectedItem = remember { mutableStateOf(DrawerElement.NONE) }
     val scope = rememberCoroutineScope()
-    val openScreen: (String) -> Unit = { appState.navController.navigate(it) { launchSingleTop = true } }
+    val openScreen: (String) -> Unit =
+        { appState.navController.navigate(it) { launchSingleTop = true } }
     var showWarningDialog by remember { mutableStateOf(false) }
-    val currentUser: User? = viewModel.currentUser.collectAsStateWithLifecycle(User()).value
+    var gesturesEnabled by remember { mutableStateOf(true) }
+    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle(null)
 
-    if (currentUser?.userName?.isNotEmpty() == true) {
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                DrawerContent(
-                    currentUser = currentUser,
-                    openScreen = openScreen,
-                    onSignOut = { showWarningDialog = true },
-                    selectedItem = selectedItem,
-                    closeDrawer = { scope.launch { drawerState.close() } }
-                )
-            }
-        ) {
-            ChatAppContent(snackBarHostState, appState, currentUser, scope, drawerState)
+//    val context = LocalContext.current
+//    Toast.makeText(context, currentUser?.userName.toString(), Toast.LENGTH_SHORT).show()
+
+    ModalNavigationDrawer(
+        gesturesEnabled = gesturesEnabled,
+        drawerState = drawerState,
+        drawerContent = {
+            DrawerContent(
+                currentUser = currentUser,
+                openScreen = openScreen,
+                onSignOut = { showWarningDialog = true },
+                selectedItem = selectedItem,
+                closeDrawer = { scope.launch { drawerState.close() } }
+            )
         }
-    } else {
-        ChatAppContent(snackBarHostState, appState, currentUser, scope, drawerState)
+    ) {
+        ChatAppContent(
+            snackBarHostState,
+            appState,
+            { gesturesEnabled = it },
+            { scope.launch { drawerState.open() } })
     }
 
     if (showWarningDialog) {
         SignOutDialog(
-            cancelAction = { showWarningDialog = false},
+            cancelAction = { showWarningDialog = false },
             action = {
                 viewModel.onSignOut(openScreen)
                 showWarningDialog = false
@@ -74,9 +79,8 @@ fun ChatApp(
 private fun ChatAppContent(
     snackBarHostState: SnackbarHostState,
     appState: ChatAppState,
-    currentUser: User?,
-    scope: CoroutineScope,
-    drawerState: DrawerState,
+    enableGestures: (Boolean) -> Unit,
+    openDrawer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -95,11 +99,7 @@ private fun ChatAppContent(
             startDestination = HomeDestination.route,
             modifier = modifier.padding(innerPadding)
         ) {
-            chatGraph(appState) {
-                if (currentUser?.userName?.isNotEmpty() == true) {
-                    scope.launch { drawerState.open() }
-                }
-            }
+            chatGraph(appState, enableGestures = enableGestures) { openDrawer() }
         }
     }
 }
@@ -110,7 +110,7 @@ fun rememberAppState(
     navController: NavHostController = rememberNavController(),
     snackBarManager: SnackBarManager = SnackBarManager,
     resources: Resources = resources(),
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ) =
     remember(snackBarHostState, navController, snackBarManager, resources, coroutineScope) {
         ChatAppState(snackBarHostState, navController, snackBarManager, resources, coroutineScope)

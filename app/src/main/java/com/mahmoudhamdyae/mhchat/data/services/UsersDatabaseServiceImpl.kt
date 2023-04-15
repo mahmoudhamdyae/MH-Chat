@@ -10,6 +10,7 @@ import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.trace
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -39,7 +40,7 @@ class UsersDatabaseServiceImpl @Inject constructor(
     }
 
     override suspend fun getCurrentUser(): Flow<User?> {
-        return getUser(accountService.currentUserId)
+        return if (accountService.hasUser) getUser(accountService.currentUserId) else flow { }
     }
 
     override suspend fun saveUser(user: User) {
