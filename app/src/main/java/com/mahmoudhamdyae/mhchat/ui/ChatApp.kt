@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -20,12 +21,13 @@ import com.mahmoudhamdyae.mhchat.ui.navigation.chatGraph
 import com.mahmoudhamdyae.mhchat.ui.screens.home.DrawerContent
 import com.mahmoudhamdyae.mhchat.ui.screens.home.DrawerElement
 import com.mahmoudhamdyae.mhchat.ui.screens.home.HomeDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.home.HomeViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun ChatApp(
-//    viewModel: DrawerViewModel = hiltViewModel(),
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val appState = rememberAppState(snackBarHostState = snackBarHostState)
@@ -33,17 +35,10 @@ fun ChatApp(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val selectedItem = remember { mutableStateOf(DrawerElement.NONE) }
     val scope = rememberCoroutineScope()
-    val openScreen: (String) -> Unit =
-        { appState.navController.navigate(it) { launchSingleTop = true } }
-    val navigateAndPopUp: (String, String) -> Unit = {  route, popUp ->
-        appState.navController.navigate(route) {
-            launchSingleTop = true
-            popUpTo(popUp) { inclusive = true }
-        } }
+
     var showWarningDialog by rememberSaveable { mutableStateOf(false) }
     var gesturesEnabled by rememberSaveable { mutableStateOf(true) }
     var currentUser: User? by rememberSaveable { mutableStateOf(null) }
-    var signOutAction: () -> Unit by rememberSaveable { mutableStateOf({ }) }
 
     ModalNavigationDrawer(
         gesturesEnabled = gesturesEnabled,
@@ -51,7 +46,7 @@ fun ChatApp(
         drawerContent = {
             DrawerContent(
                 currentUser = currentUser,
-                openScreen = openScreen,
+                openScreen = { appState.navigate(it) },
                 onSignOut = { showWarningDialog = true },
                 selectedItem = selectedItem,
                 closeDrawer = { scope.launch { drawerState.close() } }
@@ -71,7 +66,7 @@ fun ChatApp(
         SignOutDialog(
             cancelAction = { showWarningDialog = false },
             action = {
-                signOutAction()
+                viewModel.onSignOut { appState.clearAndNavigate(it) }
                 showWarningDialog = false
             }
         )
