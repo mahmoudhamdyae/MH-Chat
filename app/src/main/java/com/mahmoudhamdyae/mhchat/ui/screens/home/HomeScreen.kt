@@ -35,6 +35,7 @@ object HomeDestination: NavigationDestination {
 
 @Composable
 fun HomeScreen(
+    setCurrentUser: (User?) -> Unit,
     openAndPopUp: (String) -> Unit,
     openScreen: (String) -> Unit,
     openDrawer: () -> Unit,
@@ -44,14 +45,15 @@ fun HomeScreen(
     val list by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.initialize(openAndPopUp)
+        viewModel.initialize(openAndPopUp, setCurrentUser)
     }
 
     HomeScreenContent(
         list = list,
         onItemClick = viewModel::onItemClick,
-        onSignOut = viewModel::onSignOut,
+        signOutAction = viewModel::onSignOut,
         openScreen = openScreen,
+        openAndPopUp = openAndPopUp,
         openDrawer = openDrawer,
         modifier = modifier
     )
@@ -61,8 +63,9 @@ fun HomeScreen(
 fun HomeScreenContent(
     list: List<Pair<User?, Message?>>,
     onItemClick: (User, (String) -> Unit) -> Unit,
-    onSignOut: ((String) -> Unit) -> Unit,
+    signOutAction: ((String) -> Unit) -> Unit,
     openScreen: (String) -> Unit,
+    openAndPopUp: (String) -> Unit,
     openDrawer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -109,7 +112,7 @@ fun HomeScreenContent(
         SignOutDialog(
             cancelAction = { showWarningDialog = false},
             action = {
-                onSignOut(openScreen)
+                signOutAction(openAndPopUp)
                 showWarningDialog = false
             }
         )
@@ -248,7 +251,9 @@ fun HomeScreenContentPreview() {
     HomeScreenContent(
         list = fakeList,
         onItemClick = { _, _ ->},
-        onSignOut = {},
+        openAndPopUp = {},
         openScreen = {},
-        openDrawer = {})
+        openDrawer = {},
+        signOutAction = {}
+    )
 }

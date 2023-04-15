@@ -4,29 +4,28 @@ import android.content.res.Resources
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.mahmoudhamdyae.mhchat.common.snackbar.SnackBarManager
+import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.ui.composable.SignOutDialog
 import com.mahmoudhamdyae.mhchat.ui.navigation.chatGraph
 import com.mahmoudhamdyae.mhchat.ui.screens.home.DrawerContent
 import com.mahmoudhamdyae.mhchat.ui.screens.home.DrawerElement
-import com.mahmoudhamdyae.mhchat.ui.screens.home.DrawerViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.home.HomeDestination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun ChatApp(
-    viewModel: DrawerViewModel = hiltViewModel(),
+//    viewModel: DrawerViewModel = hiltViewModel(),
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val appState = rememberAppState(snackBarHostState = snackBarHostState)
@@ -36,12 +35,15 @@ fun ChatApp(
     val scope = rememberCoroutineScope()
     val openScreen: (String) -> Unit =
         { appState.navController.navigate(it) { launchSingleTop = true } }
-    var showWarningDialog by remember { mutableStateOf(false) }
-    var gesturesEnabled by remember { mutableStateOf(true) }
-    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle(null)
-
-//    val context = LocalContext.current
-//    Toast.makeText(context, currentUser?.userName.toString(), Toast.LENGTH_SHORT).show()
+    val navigateAndPopUp: (String, String) -> Unit = {  route, popUp ->
+        appState.navController.navigate(route) {
+            launchSingleTop = true
+            popUpTo(popUp) { inclusive = true }
+        } }
+    var showWarningDialog by rememberSaveable { mutableStateOf(false) }
+    var gesturesEnabled by rememberSaveable { mutableStateOf(true) }
+    var currentUser: User? by rememberSaveable { mutableStateOf(null) }
+    var signOutAction: () -> Unit by rememberSaveable { mutableStateOf({ }) }
 
     ModalNavigationDrawer(
         gesturesEnabled = gesturesEnabled,
@@ -57,17 +59,19 @@ fun ChatApp(
         }
     ) {
         ChatAppContent(
-            snackBarHostState,
-            appState,
-            { gesturesEnabled = it },
-            { scope.launch { drawerState.open() } })
+            setCurrentUser = { currentUser = it },
+            snackBarHostState = snackBarHostState,
+            appState = appState,
+            enableGestures = { gesturesEnabled = it },
+            openDrawer = { scope.launch { drawerState.open() } }
+        )
     }
 
     if (showWarningDialog) {
         SignOutDialog(
             cancelAction = { showWarningDialog = false },
             action = {
-                viewModel.onSignOut(openScreen)
+                signOutAction()
                 showWarningDialog = false
             }
         )
@@ -77,6 +81,7 @@ fun ChatApp(
 @Composable
 @OptIn(ExperimentalPagerApi::class)
 private fun ChatAppContent(
+    setCurrentUser: (User?) -> Unit,
     snackBarHostState: SnackbarHostState,
     appState: ChatAppState,
     enableGestures: (Boolean) -> Unit,
@@ -99,7 +104,11 @@ private fun ChatAppContent(
             startDestination = HomeDestination.route,
             modifier = modifier.padding(innerPadding)
         ) {
-            chatGraph(appState, enableGestures = enableGestures) { openDrawer() }
+            chatGraph(
+                appState = appState,
+                setCurrentUser = setCurrentUser,
+                enableGestures = enableGestures
+            ) { openDrawer() }
         }
     }
 }

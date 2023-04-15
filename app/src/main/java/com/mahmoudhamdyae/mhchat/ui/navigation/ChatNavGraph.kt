@@ -33,6 +33,7 @@ import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersScreen
 @ExperimentalPagerApi
 fun NavGraphBuilder.chatGraph(
     appState: ChatAppState,
+    setCurrentUser: (User?) -> Unit,
     enableGestures: (Boolean) -> Unit,
     openDrawer: () -> Unit
 ) {
@@ -44,6 +45,7 @@ fun NavGraphBuilder.chatGraph(
     composable(HomeDestination.route) {
         enableGestures(true)
         HomeScreen(
+            setCurrentUser = setCurrentUser,
             openAndPopUp = openAndPopUp,
             openScreen = openScreen,
             openDrawer = openDrawer
