@@ -1,5 +1,6 @@
 package com.mahmoudhamdyae.mhchat.domain.models
 
+import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.navigation.NavType
@@ -33,4 +34,8 @@ class AssetParamType: NavType<User>(isNullableAllowed = false) {
     override fun put(bundle: Bundle, key: String, value: User) {
         bundle.putParcelable(key, value)
     }
+}
+
+fun User.toJson(): String {
+    return Uri.encode(Gson().toJson(this))
 }

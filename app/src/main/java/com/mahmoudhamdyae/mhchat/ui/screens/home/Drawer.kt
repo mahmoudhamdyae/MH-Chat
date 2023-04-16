@@ -1,10 +1,31 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.home
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
@@ -17,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.domain.models.User
+import com.mahmoudhamdyae.mhchat.domain.models.toJson
 import com.mahmoudhamdyae.mhchat.ui.composable.ProfileImage
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.login.LogInDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.notifications.NotificationsDestination
@@ -42,11 +64,11 @@ fun DrawerContent(
 ) {
     ModalDrawerSheet {
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
-        DrawerHeader(currentUser)
+        DrawerHeader(currentUser, openScreen, closeDrawer)
         DividerItem()
         DrawerItem(item = DrawerElement.HOME, openScreen, selectedItem, closeDrawer)
         DrawerItem(item = DrawerElement.Notifications, openScreen, selectedItem, closeDrawer)
-        DrawerItem(item = DrawerElement.PROFILE, openScreen, selectedItem, closeDrawer)
+        DrawerItem(item = DrawerElement.PROFILE, openScreen, selectedItem, closeDrawer, currentUser = currentUser)
         DrawerItem(item = DrawerElement.SETTINGS, openScreen, selectedItem, closeDrawer)
         DrawerItem(item = DrawerElement.LOGOUT, openScreen, selectedItem, closeDrawer, onSignOut = onSignOut)
     }
@@ -55,15 +77,26 @@ fun DrawerContent(
 @Composable
 private fun DrawerHeader(
     user: User?,
+    openScreen: (String) -> Unit,
+    closeDrawer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     user?.let {
         Column(
-            modifier = modifier.fillMaxWidth().padding(top = 36.dp),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = 36.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ProfileImage(
-                modifier = Modifier.size(120.dp),
+                modifier = Modifier
+                    .size(120.dp)
+                    .clickable {
+                        closeDrawer()
+                        openScreen("${ProfileDestination.route}/${user.toJson()}/${true}")
+                    }
+                    .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                    .border(3.dp, MaterialTheme.colorScheme.surface, CircleShape),
                 photoUri = user.imageUrl?.toUri(),
             )
             Text(modifier = Modifier.padding(top = 12.dp), text = user.userName, fontSize = 26.sp, fontWeight = FontWeight.Bold)
@@ -88,6 +121,7 @@ private fun DrawerItem(
     closeDrawer: () -> Unit,
     modifier: Modifier= Modifier,
     onSignOut: ((String) -> Unit) -> Unit = {},
+    currentUser: User? = null,
 ) {
     NavigationDrawerItem(
         icon = { Icon(item.icon, contentDescription = null) },
@@ -99,7 +133,11 @@ private fun DrawerItem(
             if (item == DrawerElement.LOGOUT) {
                 onSignOut(openScreen)
             } else {
-                openScreen(item.destination)
+                if (currentUser != null) {
+                    openScreen("${item.destination}/${currentUser.toJson()}/${true}")
+                } else {
+                    openScreen(item.destination)
+                }
             }
         },
         modifier = modifier.padding(NavigationDrawerItemDefaults.ItemPadding)

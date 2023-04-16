@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.mahmoudhamdyae.mhchat.ui.navigation
 
 import androidx.navigation.NavGraphBuilder
@@ -89,7 +91,6 @@ fun NavGraphBuilder.chatGraph(
         arguments = MessagesDestination.arguments
     ) { navBackStack ->
         val chatId = navBackStack.arguments?.getString(MessagesDestination.chatIdArg)!!
-        @Suppress("DEPRECATION")
         val user = navBackStack.arguments?.getParcelable<User>(MessagesDestination.userArg)!!
         MessagesScreen(
             navigateUp = navigateUp,
@@ -101,9 +102,16 @@ fun NavGraphBuilder.chatGraph(
         )
     }
 
-    composable(ProfileDestination.route) {
+    composable(
+        route = ProfileDestination.routeWithArgs,
+        arguments = ProfileDestination.arguments
+    ) { navBackStack ->
+        val isUserMe = navBackStack.arguments?.getBoolean(ProfileDestination.isUserMe)!!
+        val user = navBackStack.arguments?.getParcelable<User>(ProfileDestination.userArg)!!
         ProfileScreen(
-            navigateUp = navigateUp
+            user = user,
+            isUserMe = isUserMe,
+            navigateUp = navigateUp,
         )
     }
 

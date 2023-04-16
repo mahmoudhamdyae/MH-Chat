@@ -32,6 +32,7 @@ import com.mahmoudhamdyae.mhchat.domain.models.AssetParamType
 import com.mahmoudhamdyae.mhchat.domain.models.Chat
 import com.mahmoudhamdyae.mhchat.domain.models.Message
 import com.mahmoudhamdyae.mhchat.domain.models.User
+import com.mahmoudhamdyae.mhchat.domain.models.toJson
 import com.mahmoudhamdyae.mhchat.ui.composable.BasicToolBar
 import com.mahmoudhamdyae.mhchat.ui.composable.EmptyScreen
 import com.mahmoudhamdyae.mhchat.ui.composable.ProfileImage
@@ -49,7 +50,7 @@ object MessagesDestination: NavigationDestination {
     const val userArg = "user"
     val routeWithArgs = "$route/{$chatIdArg}/{$userArg}"
     val arguments = listOf(
-        navArgument(chatIdArg) { type = NavType.StringType},
+        navArgument(chatIdArg) { type = NavType.StringType },
         navArgument(userArg) { type = AssetParamType() }
     )
 }
@@ -278,7 +279,9 @@ fun MessageListItem(
         if (isLastMessageByAuthor) {
             ProfileImage(
                 modifier = Modifier
-                    .clickable(onClick = { openScreen(ProfileDestination.route) })
+                    .clickable(onClick = {
+                        openScreen("${ProfileDestination.route}/${user?.toJson()}/$isUserMe")
+                    })
                     .padding(horizontal = 16.dp)
                     .size(42.dp)
                     .border(1.5.dp, borderColor, CircleShape)

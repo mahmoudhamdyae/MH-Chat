@@ -1,8 +1,7 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.users
 
-import android.net.Uri
-import com.google.gson.Gson
 import com.mahmoudhamdyae.mhchat.domain.models.User
+import com.mahmoudhamdyae.mhchat.domain.models.toJson
 import com.mahmoudhamdyae.mhchat.domain.services.ChatDatabaseService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
@@ -10,7 +9,7 @@ import com.mahmoudhamdyae.mhchat.domain.usecases.BaseUseCase
 import com.mahmoudhamdyae.mhchat.ui.screens.ChatViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,8 +24,7 @@ class UsersViewModel @Inject constructor(
 
     fun onItemClick(user: User, navigateTo: (String) -> Unit) {
         getChatId(user) { chatId ->
-            val json = Uri.encode(Gson().toJson(user))
-            navigateTo("${MessagesDestination.route}/${chatId}/${json}")
+            navigateTo("${MessagesDestination.route}/${chatId}/${user.toJson()}")
         }
     }
 

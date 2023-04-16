@@ -1,19 +1,26 @@
 package com.mahmoudhamdyae.mhchat.common.ext
 
-import android.util.Patterns
 import com.mahmoudhamdyae.mhchat.R
-import java.util.*
 import java.util.regex.Pattern
 
 private const val MIN_PASS_LENGTH = 6
 private const val PASS_PATTERN = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{4,}$"
+
+private val emailRegex =
+    ("[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+            "\\@" +
+            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+            "(" +
+            "\\." +
+            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+            ")+").toRegex()
 
 fun String.isValidUserName(): Boolean {
     return this.isNotBlank()
 }
 
 fun String.isValidEmail(): Boolean {
-    return this.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
+    return this.isNotBlank() && emailRegex.matches(this)
 }
 
 fun String.passwordErrorMessage(): Int? {
@@ -26,14 +33,6 @@ fun String.passwordErrorMessage(): Int? {
     } else {
         null
     }
-}
-
-fun String?.encryptImageUrl(): String {
-    return Base64.getEncoder().encodeToString(this?.toByteArray()).replace("/", "*")
-}
-
-fun String?.decryptImageUrl(): String {
-    return String(Base64.getDecoder().decode(this?.replace("*", "/")))
 }
 
 fun String.passwordMatches(repeated: String): Boolean {
