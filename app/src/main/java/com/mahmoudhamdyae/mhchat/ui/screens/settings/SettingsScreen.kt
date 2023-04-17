@@ -32,7 +32,7 @@ object SettingsDestination: NavigationDestination {
 
 @Composable
 fun SettingsScreen(
-    openAndPopUp: (String) -> Unit,
+    openAndClear: (String) -> Unit,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
@@ -79,7 +79,7 @@ fun SettingsScreen(
             dismissButton = { DialogCancelButton(R.string.cancel) { showWarningDialog = false } },
             confirmButton = {
                 DialogConfirmButton(R.string.delete_account_confirm) {
-                    viewModel.onDeleteAccount(password, openAndPopUp)
+                    viewModel.onDeleteAccount(password, openAndClear)
                 }
             },
             onDismissRequest = { showWarningDialog = false }

@@ -56,6 +56,20 @@ class UsersDatabaseServiceImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateToken(token: String) {
+        trace(UPDATE_USER_TRACE) {
+            userCollection.document(accountService.currentUserId)
+                .update("token", token).await()
+        }
+    }
+
+    override suspend fun updateUserName(userName: String) {
+        trace(UPDATE_USER_TRACE) {
+            userCollection.document(accountService.currentUserId)
+                .update("userName", userName).await()
+        }
+    }
+
     override suspend fun createChat(toUserId: String, chatId: String) {
         trace(CREATE_CHAT_IN_USER_TRACE) {
             userCollection.document(accountService.currentUserId).collection(CHATS_COLLECTION)

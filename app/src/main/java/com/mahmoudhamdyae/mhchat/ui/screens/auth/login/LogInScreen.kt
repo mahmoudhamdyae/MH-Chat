@@ -35,7 +35,7 @@ object LogInDestination: NavigationDestination {
 
 @Composable
 fun LogInScreen(
-    openAndPopUp: (String) -> Unit,
+    openAndClear: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LogInViewModel = hiltViewModel(),
 ) {
@@ -46,14 +46,14 @@ fun LogInScreen(
         viewModel.validationEvents.collect { event ->
             when (event) {
                 is ValidationEvent.Success -> {
-                    viewModel.onSignInClick(openAndPopUp)
+                    viewModel.onSignInClick(openAndClear)
                 }
             }
         }
     }
 
     LogInScreenContent(
-        openAndPopUp = openAndPopUp,
+        openAndPopUp = openAndClear,
         state = state,
         onEvent = viewModel::onEvent,
         modifier = modifier,

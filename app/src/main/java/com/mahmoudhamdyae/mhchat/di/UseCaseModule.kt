@@ -24,6 +24,7 @@ object UseCaseModule {
         return BaseUseCase(
             deleteAccountUseCase = DeleteAccountUseCase(accountService, usersDatabaseService, chatDatabaseService),
             forgotPasswordUseCase = ForgotPasswordUseCase(accountService),
+            getChatId = GetChatId(accountService, usersDatabaseService),
             getChatsUseCase = GetChatsUseCase(usersDatabaseService, chatDatabaseService),
             getMessagesUseCase = GetMessagesUseCase(chatDatabaseService),
             getUsersUseCase = GetUsersUseCase(accountService, usersDatabaseService),

@@ -8,6 +8,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.ui.ChatAppState
 import com.mahmoudhamdyae.mhchat.ui.composable.messagesViewModel
+import com.mahmoudhamdyae.mhchat.ui.composable.profileViewModel
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.login.LogInDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.login.LogInScreen
 import com.mahmoudhamdyae.mhchat.ui.screens.auth.signup.ProfileImageDestination
@@ -41,14 +42,15 @@ fun NavGraphBuilder.chatGraph(
 ) {
 
     val openScreen: (String) -> Unit = { route -> appState.navigate(route) }
-    val openAndPopUp: (String) -> Unit = { route -> appState.clearAndNavigate(route) }
+    val openAndClear: (String) -> Unit = { route -> appState.clearAndNavigate(route) }
+    val openAndPopUp: (String, String) -> Unit = { route, popUp -> appState.navigateAndPopUp(route, popUp) }
     val navigateUp = { appState.popUp() }
 
     composable(HomeDestination.route) {
         enableGestures(true)
         HomeScreen(
             setCurrentUser = setCurrentUser,
-            openAndPopUp = openAndPopUp,
+            openAndClear = openAndClear,
             openScreen = openScreen,
             openDrawer = openDrawer
         )
@@ -56,20 +58,20 @@ fun NavGraphBuilder.chatGraph(
 
     composable(LogInDestination.route) {
         enableGestures(false)
-        LogInScreen(openAndPopUp = openAndPopUp,)
+        LogInScreen(openAndClear = openAndClear,)
     }
 
     composable(SignUpDestination.route) {
         enableGestures(false)
         SignUpScreen(
-            openAndPopUp = openAndPopUp,
+            openAndClear = openAndClear,
             openScreen = openScreen
         )
     }
 
     composable(SettingsDestination.route) {
         SettingsScreen(
-            openAndPopUp = openAndPopUp,
+            openAndClear = openAndClear,
             navigateUp = navigateUp
         )
     }
@@ -112,13 +114,15 @@ fun NavGraphBuilder.chatGraph(
             user = user,
             isUserMe = isUserMe,
             navigateUp = navigateUp,
+            openAndPopUp = { openAndPopUp(it, ProfileDestination.route) },
+            viewModel = profileViewModel(toUserId = user.userId)
         )
     }
 
     composable(OnBoardingDestination.route) {
         enableGestures(false)
         OnBoardingScreen(
-            openAndPopUp = openAndPopUp
+            openAndClear = openAndClear
         )
     }
 

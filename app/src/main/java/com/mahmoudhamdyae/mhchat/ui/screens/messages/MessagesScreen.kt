@@ -103,7 +103,7 @@ fun MessagesScreenContent(
                     .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
-                if (messages == null || messages.isEmpty()) {
+                if (messages.isNullOrEmpty()) {
                     EmptyScreen(modifier = Modifier.weight(1f))
                 } else {
                     MessagesList(

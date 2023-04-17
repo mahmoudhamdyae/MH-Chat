@@ -1,17 +1,57 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.profile
 
-import android.widget.Toast
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Chat
+import androidx.compose.material.icons.outlined.Create
+import androidx.compose.material3.Divider
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.mahmoudhamdyae.mhchat.R
 import com.mahmoudhamdyae.mhchat.domain.models.AssetParamType
 import com.mahmoudhamdyae.mhchat.domain.models.User
+import com.mahmoudhamdyae.mhchat.domain.models.toJson
 import com.mahmoudhamdyae.mhchat.ui.composable.BasicToolBar
+import com.mahmoudhamdyae.mhchat.ui.composable.ProfileImage
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
+import com.mahmoudhamdyae.mhchat.ui.screens.messages.MessagesDestination
 
 object ProfileDestination: NavigationDestination {
     override val route: String = "profile"
@@ -30,14 +70,203 @@ fun ProfileScreen(
     user: User,
     isUserMe: Boolean,
     navigateUp: () -> Unit,
+    openAndPopUp: (String) -> Unit,
+    viewModel: ProfileViewModel,
     modifier: Modifier = Modifier,
-    viewModel: ProfileViewModel = hiltViewModel(),
+    nestedScrollInteropConnection: NestedScrollConnection = rememberNestedScrollInteropConnection(),
 ) {
-    val context = LocalContext.current
-    Toast.makeText(context, isUserMe.toString(), Toast.LENGTH_SHORT).show()
+    val chatId = viewModel.chatId.collectAsStateWithLifecycle(null).value
+
     BasicToolBar(
         title = ProfileDestination.titleRes,
         canNavigateUp = true,
         navigateUp = navigateUp
     )
+
+    val scrollState = rememberScrollState()
+    val isEdit by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    BoxWithConstraints(
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(nestedScrollInteropConnection)
+            .systemBarsPadding()
+    ) {
+        Surface {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState),
+            ) {
+                ProfileHeader(
+                    scrollState,
+                    user.imageUrl,
+                    this@BoxWithConstraints.maxHeight
+                )
+                UserInfoFields(user, this@BoxWithConstraints.maxHeight)
+            }
+        }
+
+        val fabExtended by remember { derivedStateOf { scrollState.value == 0 } }
+        ProfileFab(
+            extended = fabExtended,
+            user = user,
+            isUserMe = isUserMe,
+            chatId = chatId,
+            openAndPopUp = openAndPopUp,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                // Offsets the FAB to compensate for CoordinatorLayout collapsing behaviour
+                .offset(y = ((-100).dp)),
+        )
+    }
+}
+
+@Composable
+private fun UserInfoFields(user: User, containerHeight: Dp) {
+    Column {
+        Spacer(modifier = Modifier.height(8.dp))
+
+        NameAndPosition(user)
+
+        ProfileProperty(stringResource(R.string.display_name), user.userName)
+
+        ProfileProperty(stringResource(R.string.status), user.userName)
+
+        // Add a spacer that always shows part (320.dp) of the fields list regardless of the device,
+        // in order to always leave some content at the top.
+        Spacer(Modifier.height((containerHeight - 320.dp).coerceAtLeast(0.dp)))
+    }
+}
+
+@Composable
+private fun ProfileHeader(
+    scrollState: ScrollState,
+    imageUrl: String?,
+    containerHeight: Dp
+) {
+    val offset = (scrollState.value / 2)
+    val offsetDp = with(LocalDensity.current) { offset.toDp() }
+
+    ProfileImage(
+        modifier = Modifier
+            .heightIn(max = containerHeight / 2)
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                top = offsetDp,
+                end = 16.dp
+            ),
+        photoUri = imageUrl?.toUri(),
+    )
+}
+
+@Composable
+private fun NameAndPosition(
+    user: User
+) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Name(
+            user.userName,
+            modifier = Modifier.baselineHeight(32.dp)
+        )
+        Bio(
+            user.userName,
+            modifier = Modifier
+                .padding(bottom = 20.dp)
+                .baselineHeight(24.dp)
+        )
+    }
+}
+
+@Composable
+private fun Name(userName: String, modifier: Modifier = Modifier) {
+    Text(
+        text = userName,
+        modifier = modifier,
+        style = MaterialTheme.typography.headlineSmall
+    )
+}
+
+@Composable // Describe yourself...
+private fun Bio(userPosition: String?, modifier: Modifier = Modifier) {
+    userPosition?.let {
+        Text(
+            text = it,
+            modifier = modifier,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+fun ProfileProperty(label: String, value: String, isLink: Boolean = false) {
+    Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
+        Divider()
+        Text(
+            text = label,
+            modifier = Modifier.baselineHeight(24.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        val style = if (isLink) {
+            MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.primary)
+        } else {
+            MaterialTheme.typography.bodyLarge
+        }
+        Text(
+            text = value,
+            modifier = Modifier.baselineHeight(24.dp),
+            style = style
+        )
+    }
+}
+
+@Composable
+fun ProfileFab(
+    extended: Boolean,
+    user: User,
+    isUserMe: Boolean,
+    chatId: String?,
+    openAndPopUp: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    key(isUserMe) { // Prevent multiple invocations to execute during composition
+        FloatingActionButton(
+            // todo error here
+            onClick = {
+                if (isUserMe) //openAndPopUp()
+                else
+                    openAndPopUp("${MessagesDestination.route}/${chatId}/${user.toJson()}")
+                      },
+            modifier = modifier
+                .padding(16.dp)
+                .navigationBarsPadding()
+                .height(48.dp)
+                .widthIn(min = 48.dp),
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        ) {
+            AnimatingFabContent(
+                icon = {
+                    Icon(
+                        imageVector = if (isUserMe) Icons.Outlined.Create else Icons.Outlined.Chat,
+                        contentDescription = stringResource(
+                            if (isUserMe) R.string.edit_profile_fab else R.string.message_fab
+                        )
+                    )
+                },
+                text = {
+                    Text(
+                        text = stringResource(
+                            id = if (isUserMe) R.string.edit_profile_fab else R.string.message_fab
+                        ),
+                    )
+                },
+                extended = extended
+            )
+        }
+    }
 }

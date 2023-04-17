@@ -43,7 +43,7 @@ object OnBoardingDestination: NavigationDestination {
 @ExperimentalPagerApi
 @Composable
 fun OnBoardingScreen(
-    openAndPopUp: (String) -> Unit,
+    openAndClear: (String) -> Unit,
 ) {
     val items = OnBoardingItem.getData()
     val scope = rememberCoroutineScope()
@@ -58,7 +58,7 @@ fun OnBoardingScreen(
                 }
             },
             onSkipClick = {
-                openAndPopUp(LogInDestination.route)
+                openAndClear(LogInDestination.route)
             }
         )
 
@@ -75,7 +75,7 @@ fun OnBoardingScreen(
             if (pageState.currentPage + 1 < items.size) {
                 scope.launch { pageState.animateScrollToPage(pageState.currentPage + 1) }
             } else {
-                openAndPopUp(LogInDestination.route)
+                openAndClear(LogInDestination.route)
             }
         }
     }

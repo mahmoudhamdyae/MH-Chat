@@ -34,7 +34,7 @@ object SignUpDestination: NavigationDestination {
 
 @Composable
 fun SignUpScreen(
-    openAndPopUp: (String) -> Unit,
+    openAndClear: (String) -> Unit,
     openScreen: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = hiltViewModel(),
@@ -54,7 +54,7 @@ fun SignUpScreen(
     }
 
     SignUpScreenContent(
-        openAndPopUp = openAndPopUp,
+        openAndPopUp = openAndClear,
         state = state,
         onEvent = viewModel::onEvent,
         modifier = modifier,

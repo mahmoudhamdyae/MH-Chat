@@ -11,11 +11,23 @@ class UpdateProfileUseCase (
     private val storageService: StorageService
 ) {
 
-    suspend operator fun invoke(imageUri: Uri? = null) {
+    suspend operator fun invoke(
+        imageUri: Uri? = null,
+        token: String? = null,
+        userName: String? = null,
+    ) {
         if (imageUri != null) {
             storageService.saveImage(imageUri)
             usersDatabaseService.
-            updateProfileImage(storageService.getImage(accountService.currentUserId).toString())
+                updateProfileImage(storageService.getImage(accountService.currentUserId).toString())
+        }
+
+        if (token != null) {
+            usersDatabaseService.updateToken(token)
+        }
+
+        if (userName != null) {
+            usersDatabaseService.updateUserName(userName)
         }
     }
 }

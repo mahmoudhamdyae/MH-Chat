@@ -1,10 +1,9 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.home
 
-import android.net.Uri
-import com.google.gson.Gson
 import com.mahmoudhamdyae.mhchat.data.services.PreferencesRepository
 import com.mahmoudhamdyae.mhchat.domain.models.Message
 import com.mahmoudhamdyae.mhchat.domain.models.User
+import com.mahmoudhamdyae.mhchat.domain.models.toJson
 import com.mahmoudhamdyae.mhchat.domain.services.AccountService
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
 import com.mahmoudhamdyae.mhchat.domain.services.UsersDatabaseService
@@ -83,8 +82,7 @@ class HomeViewModel @Inject constructor(
                 val chatId = userChats?.first {
                     it?.toUserId == user.userId
                 }?.chatId
-                val json = Uri.encode(Gson().toJson(user))
-                navigateTo("${MessagesDestination.route}/${chatId}/${json}")
+                navigateTo("${MessagesDestination.route}/${chatId}/${user.toJson()}")
             }
         }
     }

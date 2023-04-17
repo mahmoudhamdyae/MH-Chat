@@ -36,7 +36,7 @@ object HomeDestination: NavigationDestination {
 @Composable
 fun HomeScreen(
     setCurrentUser: (User?) -> Unit,
-    openAndPopUp: (String) -> Unit,
+    openAndClear: (String) -> Unit,
     openScreen: (String) -> Unit,
     openDrawer: () -> Unit,
     modifier: Modifier = Modifier,
@@ -45,7 +45,7 @@ fun HomeScreen(
     val list by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.initialize(openAndPopUp, setCurrentUser)
+        viewModel.initialize(openAndClear, setCurrentUser)
     }
 
     HomeScreenContent(
@@ -53,7 +53,7 @@ fun HomeScreen(
         onItemClick = viewModel::onItemClick,
         signOutAction = viewModel::onSignOut,
         openScreen = openScreen,
-        openAndPopUp = openAndPopUp,
+        openAndPopUp = openAndClear,
         openDrawer = openDrawer,
         modifier = modifier
     )

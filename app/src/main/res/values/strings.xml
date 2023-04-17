@@ -81,6 +81,12 @@
     <string name="author_me">Me</string>
     <string name="today">Today</string>
 
+    <!-- Profile Screen -->
+    <string name="edit_profile_fab">Edit Profile</string>
+    <string name="message_fab">Message</string>
+    <string name="display_name">Display Name</string>
+    <string name="status">Status</string>
+
     <!-- Content Descriptions -->
     <string name="email_content_description">Email</string>
     <string name="password_content_description">Password</string>

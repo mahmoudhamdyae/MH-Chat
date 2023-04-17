@@ -3,6 +3,7 @@ package com.mahmoudhamdyae.mhchat.domain.usecases
 data class BaseUseCase (
     val deleteAccountUseCase: DeleteAccountUseCase,
     val forgotPasswordUseCase: ForgotPasswordUseCase,
+    val getChatId: GetChatId,
     val getChatsUseCase: GetChatsUseCase,
     val getMessagesUseCase: GetMessagesUseCase,
     val getUsersUseCase: GetUsersUseCase,
