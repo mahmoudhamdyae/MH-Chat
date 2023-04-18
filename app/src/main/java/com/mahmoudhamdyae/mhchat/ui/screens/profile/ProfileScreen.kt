@@ -1,6 +1,12 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.profile
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,11 +22,13 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,6 +39,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -84,7 +93,7 @@ fun ProfileScreen(
     )
 
     val scrollState = rememberScrollState()
-    val isEdit by rememberSaveable {
+    var isEdit by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -101,11 +110,13 @@ fun ProfileScreen(
                     .verticalScroll(scrollState),
             ) {
                 ProfileHeader(
-                    scrollState,
-                    user.imageUrl,
-                    this@BoxWithConstraints.maxHeight
+                    scrollState = scrollState,
+                    imageUrl = user.imageUrl,
+                    containerHeight = this@BoxWithConstraints.maxHeight,
+                    isEdit = isEdit,
+                    updateImage = viewModel::updateProfileImage
                 )
-                UserInfoFields(user, this@BoxWithConstraints.maxHeight)
+                UserInfoFields(user, this@BoxWithConstraints.maxHeight, isEdit)
             }
         }
 
@@ -114,6 +125,7 @@ fun ProfileScreen(
             extended = fabExtended,
             user = user,
             isUserMe = isUserMe,
+            enableEdit = { isEdit = it },
             chatId = chatId,
             openAndPopUp = openAndPopUp,
             modifier = Modifier
@@ -125,7 +137,7 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun UserInfoFields(user: User, containerHeight: Dp) {
+private fun UserInfoFields(user: User, containerHeight: Dp, isEdit: Boolean) {
     Column {
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -145,22 +157,45 @@ private fun UserInfoFields(user: User, containerHeight: Dp) {
 private fun ProfileHeader(
     scrollState: ScrollState,
     imageUrl: String?,
-    containerHeight: Dp
+    containerHeight: Dp,
+    isEdit: Boolean,
+    updateImage: (Uri) -> Unit,
 ) {
     val offset = (scrollState.value / 2)
     val offsetDp = with(LocalDensity.current) { offset.toDp() }
+    var newImage: Uri? by rememberSaveable { mutableStateOf(null) }
 
-    ProfileImage(
-        modifier = Modifier
-            .heightIn(max = containerHeight / 2)
-            .fillMaxWidth()
-            .padding(
-                start = 16.dp,
-                top = offsetDp,
-                end = 16.dp
-            ),
-        photoUri = imageUrl?.toUri(),
-    )
+    val imagePicker =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri != null) {
+                newImage = uri
+                updateImage(uri)
+            }
+        }
+
+    Box {
+        ProfileImage(
+            modifier = Modifier
+                .heightIn(max = containerHeight / 2)
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    top = offsetDp,
+                    end = 16.dp
+                ),
+            photoUri = if (newImage != null) newImage else  imageUrl?.toUri(),
+        )
+        AnimatedVisibility(visible = isEdit) {
+            IconButton(onClick = {
+                imagePicker.launch(
+                    PickVisualMediaRequest(
+                        mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }) {
+                Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+            }
+        }
+    }
 }
 
 @Composable
@@ -230,15 +265,15 @@ fun ProfileFab(
     extended: Boolean,
     user: User,
     isUserMe: Boolean,
+    enableEdit: (Boolean) -> Unit,
     chatId: String?,
     openAndPopUp: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     key(isUserMe) { // Prevent multiple invocations to execute during composition
         FloatingActionButton(
-            // todo error here
             onClick = {
-                if (isUserMe) //openAndPopUp()
+                if (isUserMe) enableEdit(true)
                 else
                     openAndPopUp("${MessagesDestination.route}/${chatId}/${user.toJson()}")
                       },

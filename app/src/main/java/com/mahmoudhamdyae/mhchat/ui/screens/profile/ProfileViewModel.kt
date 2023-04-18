@@ -1,5 +1,6 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.profile
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
@@ -10,12 +11,30 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 
 class ProfileViewModel @AssistedInject constructor(
-    useCase: BaseUseCase,
+    private val useCase: BaseUseCase,
     @Assisted("toUserId") userId: String,
     logService: LogService
 ): ChatViewModel(logService) {
 
     val chatId = useCase.getChatId(userId)
+
+    fun updateProfileImage(imageUrl: Uri) {
+        launchCatching {
+            useCase.updateProfileUseCase(imageUri = imageUrl)
+        }
+    }
+
+    fun updateUserName(userName: String) {
+        launchCatching {
+            useCase.updateProfileUseCase(userName = userName)
+        }
+    }
+
+    fun updateBio(bio: String) {
+        launchCatching {
+            useCase.updateProfileUseCase(bio = bio)
+        }
+    }
 
     @AssistedFactory
     interface Factory {

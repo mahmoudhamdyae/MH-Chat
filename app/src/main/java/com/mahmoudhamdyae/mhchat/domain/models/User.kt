@@ -18,7 +18,7 @@ data class User(
     val email: String = "",
     val userName: String = "",
     val imageUrl: String? = null,
-    val token: String = "",
+    val bio: String = "",
 ): Parcelable
 
 class AssetParamType: NavType<User>(isNullableAllowed = false) {

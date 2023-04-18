@@ -13,8 +13,8 @@ class UpdateProfileUseCase (
 
     suspend operator fun invoke(
         imageUri: Uri? = null,
-        token: String? = null,
         userName: String? = null,
+        bio: String? = null,
     ) {
         if (imageUri != null) {
             storageService.saveImage(imageUri)
@@ -22,8 +22,8 @@ class UpdateProfileUseCase (
                 updateProfileImage(storageService.getImage(accountService.currentUserId).toString())
         }
 
-        if (token != null) {
-            usersDatabaseService.updateToken(token)
+        if (bio != null) {
+            usersDatabaseService.updateBio(bio)
         }
 
         if (userName != null) {

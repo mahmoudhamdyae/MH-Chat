@@ -76,9 +76,6 @@ class HomeViewModel @Inject constructor(
         launchCatching {
             useCase.signOutUseCase()
             navigate(LogInDestination.route)
-            launchCatching {
-                useCase.updateProfileUseCase(token = "")
-            }
             fcm.isAutoInitEnabled = false
         }
     }

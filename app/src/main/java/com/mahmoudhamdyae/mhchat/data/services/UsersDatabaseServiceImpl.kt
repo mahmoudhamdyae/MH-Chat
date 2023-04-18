@@ -56,17 +56,17 @@ class UsersDatabaseServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateToken(token: String) {
-        trace(UPDATE_USER_TRACE) {
-            userCollection.document(accountService.currentUserId)
-                .update("token", token).await()
-        }
-    }
-
     override suspend fun updateUserName(userName: String) {
         trace(UPDATE_USER_TRACE) {
             userCollection.document(accountService.currentUserId)
                 .update("userName", userName).await()
+        }
+    }
+
+    override suspend fun updateBio(bio: String) {
+        trace(UPDATE_USER_TRACE) {
+            userCollection.document(accountService.currentUserId)
+                .update("bio", bio).await()
         }
     }
 
