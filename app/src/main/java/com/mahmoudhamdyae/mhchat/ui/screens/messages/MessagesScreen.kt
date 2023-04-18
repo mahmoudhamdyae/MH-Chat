@@ -126,7 +126,12 @@ fun MessagesScreenContent(
                         }
                     },
                     modifier = Modifier.padding(LocalSpacing.current.medium)
-                ) { onMessageSend(it, anotherUser.userId, currentUser!!, context) }
+                ) {
+                    onMessageSend(it, anotherUser.userId, currentUser!!, context)
+                    scope.launch {
+                        scrollState.animateScrollToItem(0)
+                    }
+                }
             }
 
             BasicToolBar(
