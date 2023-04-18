@@ -1,5 +1,6 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.home
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
@@ -30,6 +31,7 @@ import com.mahmoudhamdyae.mhchat.ui.composable.*
 import com.mahmoudhamdyae.mhchat.ui.navigation.NavigationDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.settings.SettingsDestination
 import com.mahmoudhamdyae.mhchat.ui.screens.users.UsersDestination
+import java.text.SimpleDateFormat
 import java.util.*
 
 object HomeDestination: NavigationDestination {
@@ -175,6 +177,7 @@ fun ChatList(
     }
 }
 
+@SuppressLint("SimpleDateFormat")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatListItem(
@@ -213,8 +216,9 @@ fun ChatListItem(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f)
                         )
+                        val today = SimpleDateFormat("d MMM").format(Date()) == message.dayOfMonth
                         Text(
-                            text = message.time,
+                            text = if (today) message.time else message.dayOfMonth,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
