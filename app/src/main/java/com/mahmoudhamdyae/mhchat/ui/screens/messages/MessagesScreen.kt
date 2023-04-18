@@ -282,6 +282,18 @@ fun MessageListItem(
         horizontalArrangement = if (isUserMe) Arrangement.End else Arrangement.Start,
         modifier = spaceBetweenAuthors
     ) {
+        if (isUserMe) {
+            AuthorAndTextMessage(
+                message = message,
+                userName = "Me",
+                isUserMe = true,
+                isFirstMessageByAuthor = isFirstMessageByAuthor,
+                isLastMessageByAuthor = isLastMessageByAuthor,
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .weight(1f)
+            )
+        }
         if (isLastMessageByAuthor) {
             ProfileImage(
                 modifier = Modifier
@@ -299,16 +311,18 @@ fun MessageListItem(
             // Space under avatar
             Spacer(modifier = Modifier.width(74.dp))
         }
-        AuthorAndTextMessage(
-            message = message,
-            userName = if (isUserMe) "Me" else user?.userName,
-            isUserMe = isUserMe,
-            isFirstMessageByAuthor = isFirstMessageByAuthor,
-            isLastMessageByAuthor = isLastMessageByAuthor,
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .weight(1f)
-        )
+        if (!isUserMe) {
+            AuthorAndTextMessage(
+                message = message,
+                userName = user?.userName,
+                isUserMe = false,
+                isFirstMessageByAuthor = isFirstMessageByAuthor,
+                isLastMessageByAuthor = isLastMessageByAuthor,
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .weight(1f)
+            )
+        }
     }
 }
 
@@ -395,10 +409,12 @@ fun AuthorAndTextMessage(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
+        val chatModifier = if (isUserMe)  Modifier.align(Alignment.End) else Modifier
+
         if (isLastMessageByAuthor) {
-            AuthorNameTimestamp(message, userName)
+            AuthorNameTimestamp(message, userName, chatModifier)
         }
-        ChatItemBubble(message, isUserMe)
+        ChatItemBubble(message, isUserMe, chatModifier)
         if (isFirstMessageByAuthor) {
             // Last bubble before next author
             Spacer(modifier = Modifier.height(8.dp))
@@ -441,9 +457,9 @@ private fun RowScope.DayHeaderLine() {
 }
 
 @Composable
-private fun AuthorNameTimestamp(message: Message, userName: String?) {
+private fun AuthorNameTimestamp(message: Message, userName: String?, modifier: Modifier = Modifier) {
     // Combine author and timestamp for a11y.
-    Row(modifier = Modifier.semantics(mergeDescendants = true) {}) {
+    Row(modifier = modifier.semantics(mergeDescendants = true) {}) {
         Text(
             text = userName ?: "",
             style = MaterialTheme.typography.titleMedium,
