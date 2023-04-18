@@ -1,7 +1,12 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.messages
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.Volley
+import com.google.firebase.messaging.FirebaseMessaging
 import com.mahmoudhamdyae.mhchat.domain.models.Chat
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.services.LogService
@@ -22,14 +27,39 @@ class MessagesViewModel @AssistedInject constructor(
     lateinit var currentUser: Flow<User?>
 
     init {
+        val topic = "/topics/$chatId"
+        FirebaseMessaging.getInstance().subscribeToTopic(topic)
+            .addOnCompleteListener { task ->
+                var msg = "Subscribed"
+                if (!task.isSuccessful) {
+                    msg = "Subscribe failed"
+                }
+                Log.d("FCM", msg)
+            }
         launchCatching {
             currentUser = useCase.getUserUseCase()
         }
     }
 
-    fun onMessageSend(messageBody: String, toUserId: String) {
+    fun onMessageSend(messageBody: String, toUserId: String, currentUser: User, context: Context) {
+
+
+        val requestQueue: RequestQueue by lazy {
+            Volley.newRequestQueue(context)
+        }
+
+
+
         launchCatching {
-            useCase.sendMessageUseCase(chatId, messageBody, toUserId)
+            useCase.sendMessageUseCase(
+                chatId = chatId,
+                messageBody = messageBody,
+                toUserId = toUserId,
+                fromUserId = currentUser.userId,
+                fromUserName = currentUser.userName,
+                fromUserImageUrl = currentUser.imageUrl,
+                requestQueue = requestQueue
+            )
         }
     }
 

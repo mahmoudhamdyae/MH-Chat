@@ -1,5 +1,6 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.home
 
+import com.google.firebase.messaging.FirebaseMessaging
 import com.mahmoudhamdyae.mhchat.data.services.PreferencesRepository
 import com.mahmoudhamdyae.mhchat.domain.models.Message
 import com.mahmoudhamdyae.mhchat.domain.models.User
@@ -21,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val fcm: FirebaseMessaging,
     private val accountService: AccountService,
     private val usersDatabaseService: UsersDatabaseService,
     private val useCase: BaseUseCase,
@@ -50,6 +52,7 @@ class HomeViewModel @Inject constructor(
         } else {
             getCurrentUser(setCurrentUser)
             getChats()
+            fcm.isAutoInitEnabled = true
         }
     }
 
@@ -73,6 +76,10 @@ class HomeViewModel @Inject constructor(
         launchCatching {
             useCase.signOutUseCase()
             navigate(LogInDestination.route)
+            launchCatching {
+                useCase.updateProfileUseCase(token = "")
+            }
+            fcm.isAutoInitEnabled = false
         }
     }
 

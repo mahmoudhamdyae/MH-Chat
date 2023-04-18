@@ -1,6 +1,7 @@
 package com.mahmoudhamdyae.mhchat.ui.screens.messages
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.LastBaseline
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -86,7 +88,7 @@ fun MessagesScreenContent(
     navigateUp: () -> Unit,
     openScreen: (String) -> Unit,
     messages: List<Message>?,
-    onMessageSend: (String, String) -> Unit,
+    onMessageSend: (String, String, User, Context) -> Unit,
     currentUser: User?,
     anotherUser: User,
     modifier: Modifier = Modifier,
@@ -95,6 +97,8 @@ fun MessagesScreenContent(
     val topBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topBarState)
     val scope = rememberCoroutineScope()
+
+    val context = LocalContext.current
 
     Surface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -122,7 +126,7 @@ fun MessagesScreenContent(
                         }
                     },
                     modifier = Modifier.padding(LocalSpacing.current.medium)
-                ) { onMessageSend(it, anotherUser.userId) }
+                ) { onMessageSend(it, anotherUser.userId, currentUser!!, context) }
             }
 
             BasicToolBar(
@@ -483,7 +487,7 @@ fun MessagesScreenContentPreview() {
     MessagesScreenContent(
         navigateUp = {},
         messages = fakeMessages,
-        onMessageSend = { _, _ -> },
+        onMessageSend = { _, _ , _, _ -> },
         currentUser = null,
         anotherUser = User(),
         openScreen = {},
