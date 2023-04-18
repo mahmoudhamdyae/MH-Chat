@@ -182,20 +182,6 @@ fun MessagesList(
                     messagesGrouped.forEach { (date, messages) ->
                         val today = SimpleDateFormat("d MMM").format(Date()) == date
                         val dayString = if (today) "Today" else date
-                        item(key = date) {
-                            DayHeader(
-                                dayString,
-                                modifier = Modifier
-                                    // Animate each list item to slide in vertically
-                                    .animateEnterExit(
-                                        enter = slideInVertically(
-                                            animationSpec = spring(
-                                                stiffness = Spring.StiffnessVeryLow,
-                                                dampingRatio = Spring.DampingRatioLowBouncy
-                                            ),
-                                        )
-                                    ))
-                        }
 
                         messages.forEachIndexed { index, message ->
                             val prevAuthor = messages.getOrNull(index - 1)?.fromUserId
@@ -225,6 +211,21 @@ fun MessagesList(
                                         )
                                 )
                             }
+                        }
+
+                        item(key = date) {
+                            DayHeader(
+                                dayString,
+                                modifier = Modifier
+                                    // Animate each list item to slide in vertically
+                                    .animateEnterExit(
+                                        enter = slideInVertically(
+                                            animationSpec = spring(
+                                                stiffness = Spring.StiffnessVeryLow,
+                                                dampingRatio = Spring.DampingRatioLowBouncy
+                                            ),
+                                        )
+                                    ))
                         }
                     }
             }
@@ -276,6 +277,7 @@ fun MessageListItem(
     }
 
     val spaceBetweenAuthors = if (isLastMessageByAuthor) modifier.padding(top = 8.dp) else modifier
+
     Row(
         horizontalArrangement = if (isUserMe) Arrangement.End else Arrangement.Start,
         modifier = spaceBetweenAuthors
@@ -314,6 +316,7 @@ fun MessageListItem(
 fun ChatItemBubble(
     message: Message,
     isUserMe: Boolean,
+    modifier: Modifier = Modifier,
 ) {
 
     val backgroundBubbleColor = if (isUserMe) {
@@ -322,8 +325,18 @@ fun ChatItemBubble(
         MaterialTheme.colorScheme.surfaceVariant
     }
 
-    Column {
-        val chatBubbleShape = RoundedCornerShape(4.dp, 20.dp, 20.dp, 20.dp)
+    Column(modifier = modifier) {
+        val chatBubbleShape = if (isUserMe) RoundedCornerShape(
+            topStart = 20.dp,
+            topEnd = 4.dp,
+            bottomEnd = 20.dp,
+            bottomStart = 20.dp
+        ) else RoundedCornerShape(
+            topStart = 4.dp,
+            topEnd = 20.dp,
+            bottomEnd = 20.dp,
+            bottomStart = 20.dp
+        )
         Surface(
             color = backgroundBubbleColor,
             shape = chatBubbleShape
@@ -385,7 +398,7 @@ fun AuthorAndTextMessage(
         if (isLastMessageByAuthor) {
             AuthorNameTimestamp(message, userName)
         }
-        ChatItemBubble(message, isUserMe,)
+        ChatItemBubble(message, isUserMe)
         if (isFirstMessageByAuthor) {
             // Last bubble before next author
             Spacer(modifier = Modifier.height(8.dp))
