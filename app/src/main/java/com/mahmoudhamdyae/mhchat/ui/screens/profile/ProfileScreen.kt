@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
@@ -17,12 +18,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material3.Divider
@@ -44,8 +45,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -54,6 +57,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.mahmoudhamdyae.mhchat.R
+import com.mahmoudhamdyae.mhchat.common.ext.toImageUri
 import com.mahmoudhamdyae.mhchat.domain.models.AssetParamType
 import com.mahmoudhamdyae.mhchat.domain.models.User
 import com.mahmoudhamdyae.mhchat.domain.models.toJson
@@ -86,12 +90,6 @@ fun ProfileScreen(
 ) {
     val chatId = viewModel.chatId.collectAsStateWithLifecycle(null).value
 
-    BasicToolBar(
-        title = ProfileDestination.titleRes,
-        canNavigateUp = true,
-        navigateUp = navigateUp
-    )
-
     val scrollState = rememberScrollState()
     var isEdit by rememberSaveable {
         mutableStateOf(false)
@@ -109,6 +107,11 @@ fun ProfileScreen(
                     .fillMaxSize()
                     .verticalScroll(scrollState),
             ) {
+                BasicToolBar(
+                    title = ProfileDestination.titleRes,
+                    canNavigateUp = true,
+                    navigateUp = navigateUp
+                )
                 ProfileHeader(
                     scrollState = scrollState,
                     imageUrl = user.imageUrl,
@@ -173,6 +176,15 @@ private fun ProfileHeader(
             }
         }
 
+    val context = LocalContext.current
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+            if (bitmap != null)  {
+                newImage = bitmap.toImageUri(context)
+                updateImage(newImage!!)
+            }
+        }
+
     Box {
         ProfileImage(
             modifier = Modifier
@@ -185,14 +197,35 @@ private fun ProfileHeader(
                 ),
             photoUri = if (newImage != null) newImage else  imageUrl?.toUri(),
         )
-        AnimatedVisibility(visible = isEdit) {
+        AnimatedVisibility(
+            visible = isEdit,
+            modifier = Modifier.align(Alignment.BottomStart)
+        ) {
             IconButton(onClick = {
                 imagePicker.launch(
                     PickVisualMediaRequest(
                         mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
                 )
             }) {
-                Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+                Icon(
+                    painter = painterResource(id = R.drawable.file_open_24),
+                    contentDescription = null,
+                    modifier = Modifier.size(72.dp)
+                )
+            }
+        }
+        AnimatedVisibility(
+            visible = isEdit,
+            modifier = Modifier.align(Alignment.BottomEnd)
+        ) {
+            IconButton(onClick = {
+                cameraLauncher.launch()
+            }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.photo_camera_24),
+                    contentDescription = null,
+                    modifier = Modifier.size(72.dp)
+                )
             }
         }
     }

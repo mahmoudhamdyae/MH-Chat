@@ -6,9 +6,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import java.io.ByteArrayOutputStream
 
-fun Bitmap?.toImageUri(context: Context): Uri? {
-    if (this == null) return null
-
+fun Bitmap.toImageUri(context: Context): Uri {
     val bytes = ByteArrayOutputStream()
     this.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
     val path = MediaStore.Images.Media.insertImage(context.contentResolver, this, "Title", null)
