@@ -1,10 +1,12 @@
 package com.mahmoudhamdyae.mhchat.domain.models
 
 import android.annotation.SuppressLint
+import androidx.annotation.Keep
 import java.text.SimpleDateFormat
 import java.util.*
 
 @SuppressLint("SimpleDateFormat")
+@Keep
 data class Message(
     val body: String = "",
     val fromUserId: String = "",

@@ -308,8 +308,7 @@ fun ProfileFab(
             onClick = {
                 if (isUserMe) enableEdit(true)
                 else
-                    openAndPopUp("${MessagesDestination.route}/${chatId}/${user.toJson()}")
-                      },
+                    openAndPopUp("${MessagesDestination.route}/${chatId}/${user.toJson()}") },
             modifier = modifier
                 .padding(16.dp)
                 .navigationBarsPadding()

@@ -3,16 +3,19 @@ package com.mahmoudhamdyae.mhchat.domain.models
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.annotation.Keep
 import androidx.navigation.NavType
 import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
 
+@Keep
 data class UserChat(
     val toUserId: String = "",
     val chatId: String = "",
 )
 
 @Parcelize
+@Keep
 data class User(
     val userId: String = "",
     val email: String = "",
